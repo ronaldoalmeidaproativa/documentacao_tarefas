@@ -1,0 +1,2057 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Help Desk · Processos Coelho Diniz</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0e11;
+    --sidebar-bg: #111318;
+    --card-bg: #16181f;
+    --border: #2a2d38;
+    --border-accent: #c8a84b;
+    --gold: #c8a84b;
+    --gold-light: #e8c96a;
+    --gold-dim: #8a6f2e;
+    --text-primary: #f0ede4;
+    --text-secondary: #8a8d9a;
+    --text-muted: #52556a;
+    --success: #3ecf8e;
+    --success-dim: #1a3d2e;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #60a5fa;
+    --radius: 6px;
+    --radius-lg: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+  body.menu-open { overflow: hidden; }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform .28s cubic-bezier(.4,0,.2,1);
+    flex-shrink: 0;
+  }
+
+  .logo-area {
+    padding: 24px 20px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-tag {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--gold);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .logo-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 1.5px;
+    color: var(--text-primary);
+    line-height: 1.1;
+  }
+
+  .logo-title span { color: var(--gold); }
+
+  .global-progress {
+    margin: 12px 20px 0;
+    background: var(--border);
+    border-radius: 2px;
+    height: 2px;
+    overflow: hidden;
+  }
+
+  .global-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold-light));
+    transition: width .4s ease;
+    width: 0%;
+  }
+
+  .global-progress-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    margin: 6px 20px 0;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  nav { flex: 1; overflow-y: auto; padding: 12px 0 20px; }
+  nav::-webkit-scrollbar { width: 4px; }
+  nav::-webkit-scrollbar-track { background: transparent; }
+  nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .nav-section-label {
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 16px 20px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+    cursor: pointer;
+    transition: all .15s;
+    border-left: 2px solid transparent;
+    position: relative;
+  }
+
+  .nav-item:hover { background: rgba(200,168,75,.06); }
+
+  .nav-item.active {
+    background: rgba(200,168,75,.10);
+    border-left-color: var(--gold);
+  }
+
+  .nav-item.active .nav-label { color: var(--gold-light); font-weight: 500; }
+
+  .nav-icon {
+    width: 26px;
+    height: 20px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* folder SVG icon */
+  .folder-icon { color: var(--gold); }
+  .calendar-icon { color: var(--info); }
+
+  .nav-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    letter-spacing: .3px;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .nav-badge {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: var(--success-dim);
+    color: var(--success);
+    flex-shrink: 0;
+  }
+
+  .nav-badge.done { background: rgba(62,207,142,.15); }
+  .nav-badge.partial { background: rgba(245,158,11,.12); color: var(--warning); }
+  .nav-badge.none { background: var(--border); color: var(--text-muted); }
+
+  /* ── MAIN CONTENT ── */
+  #main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .topbar {
+    padding: 16px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--sidebar-bg);
+  }
+
+  .topbar-breadcrumb {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  .topbar-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--text-primary);
+    flex: 1;
+  }
+
+  .topbar-actions { display: flex; gap: 8px; }
+
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all .15s;
+    letter-spacing: .3px;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+  }
+
+  .btn-ghost:hover { border-color: var(--text-muted); color: var(--text-primary); }
+
+  .btn-primary {
+    background: var(--gold);
+    color: #0d0e11;
+    border-color: var(--gold);
+    font-weight: 600;
+  }
+
+  .btn-primary:hover { background: var(--gold-light); border-color: var(--gold-light); }
+
+  .btn-success {
+    background: var(--success-dim);
+    color: var(--success);
+    border-color: rgba(62,207,142,.3);
+  }
+
+  .btn-success:hover { background: rgba(62,207,142,.25); }
+
+  .btn-danger {
+    background: rgba(239,68,68,.1);
+    color: var(--danger);
+    border-color: rgba(239,68,68,.3);
+  }
+
+  .btn-danger:hover { background: rgba(239,68,68,.2); }
+
+  #content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px;
+    scroll-behavior: smooth;
+  }
+
+  #content::-webkit-scrollbar { width: 4px; }
+  #content::-webkit-scrollbar-track { background: transparent; }
+  #content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── SECTION CARD ── */
+  .section-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .section-header:hover { background: rgba(255,255,255,.02); }
+
+  .section-type-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-folder { background: var(--gold); }
+  .dot-calendar { background: var(--info); }
+  .dot-check { background: var(--success); }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    flex: 1;
+  }
+
+  .section-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .progress-ring {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-muted);
+  }
+
+  .progress-ring.done { color: var(--success); }
+  .progress-ring.partial { color: var(--warning); }
+
+  .approval-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: .5px;
+  }
+
+  .badge-approved { background: rgba(62,207,142,.15); color: var(--success); border: 1px solid rgba(62,207,142,.3); }
+  .badge-pending { background: rgba(245,158,11,.1); color: var(--warning); border: 1px solid rgba(245,158,11,.25); }
+  .badge-locked { background: var(--border); color: var(--text-muted); border: 1px solid var(--border); }
+
+  .chevron {
+    font-size: 12px;
+    color: var(--text-muted);
+    transition: transform .2s;
+  }
+
+  .section-body { padding: 0; }
+  .section-body.collapsed { display: none; }
+
+  /* ── DESCRIPTION BOX ── */
+  .desc-box {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(200,168,75,.04);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .desc-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+  .desc-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .desc-text strong { color: var(--gold); font-weight: 500; }
+
+  /* ── TASK LIST ── */
+  .task-group {
+    padding: 16px 20px;
+  }
+
+  .task-group-label {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: var(--radius);
+    transition: background .12s;
+    margin-bottom: 2px;
+    cursor: pointer;
+  }
+
+  .task-item:hover { background: rgba(255,255,255,.03); }
+
+  .task-cb {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .15s;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .task-cb.checked {
+    background: var(--success);
+    border-color: var(--success);
+  }
+
+  .task-cb.checked::after {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 8px;
+    border: 1.5px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg) translate(-1px, -1px);
+  }
+
+  .task-label {
+    font-size: 13.5px;
+    color: var(--text-primary);
+    line-height: 1.5;
+    flex: 1;
+    transition: color .15s;
+  }
+
+  .task-label.done {
+    color: var(--text-muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--text-muted);
+  }
+
+  .task-label .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .tag-urgente { background: rgba(239,68,68,.15); color: var(--danger); }
+  .tag-aprovacao { background: rgba(96,165,250,.12); color: var(--info); }
+  .tag-drive { background: rgba(62,207,142,.12); color: var(--success); }
+  .tag-horario { background: rgba(245,158,11,.12); color: var(--warning); }
+
+  .task-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 10px 0;
+    opacity: .5;
+  }
+
+  /* ── APPROVAL FOOTER ── */
+  .section-footer {
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0,0,0,.15);
+  }
+
+  .progress-bar-wrap {
+    flex: 1;
+    background: var(--border);
+    border-radius: 2px;
+    height: 3px;
+    overflow: hidden;
+  }
+
+  .progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+    transition: width .3s ease;
+    border-radius: 2px;
+  }
+
+  .footer-label {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  /* ── APPROVAL STAMP ── */
+  .approval-stamp {
+    display: none;
+    margin: 0 20px 16px;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(62,207,142,.3);
+    background: rgba(62,207,142,.06);
+    align-items: center;
+    gap: 10px;
+  }
+
+  .approval-stamp.visible { display: flex; }
+
+  .stamp-icon { font-size: 18px; }
+
+  .stamp-text {
+    font-size: 12px;
+    color: var(--success);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .stamp-time { color: var(--text-muted); font-size: 11px; margin-top: 2px; }
+
+  /* ── EMPTY STATE ── */
+  #empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 16px;
+    color: var(--text-muted);
+  }
+
+  .empty-icon { font-size: 48px; opacity: .3; }
+  .empty-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 1px; color: var(--text-secondary); }
+  .empty-desc { font-size: 13px; text-align: center; max-width: 280px; line-height: 1.6; }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 1px;
+  }
+
+  .stat-value.gold { color: var(--gold); }
+  .stat-value.green { color: var(--success); }
+  .stat-value.blue { color: var(--info); }
+
+  /* hidden section pages */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── HAMBURGER BUTTON ── */
+  #hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color .15s;
+  }
+  #hamburger:hover { border-color: var(--gold); }
+  #hamburger span {
+    display: block;
+    height: 1.5px;
+    background: var(--text-secondary);
+    border-radius: 2px;
+    transition: transform .25s, opacity .2s, width .2s;
+    transform-origin: center;
+  }
+  #hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); background: var(--gold); }
+  #hamburger.open span:nth-child(2) { opacity: 0; width: 0; }
+  #hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); background: var(--gold); }
+
+  /* ── OVERLAY ── */
+  #overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 199;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .28s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #overlay.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── MOBILE BOTTOM NAV BAR (tab bar) ── */
+  #bottomnav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 56px;
+    background: var(--sidebar-bg);
+    border-top: 1px solid var(--border);
+    align-items: center;
+    justify-content: space-around;
+    z-index: 50;
+    padding: 0 4px;
+  }
+
+  .bn-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    flex: 1;
+    max-width: 80px;
+    transition: background .15s;
+  }
+  .bn-item:hover { background: rgba(200,168,75,.07); }
+  .bn-item.bn-active .bn-label { color: var(--gold); }
+  .bn-item.bn-active .bn-dot { background: var(--gold); }
+
+  .bn-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    transition: background .15s;
+  }
+  .bn-label {
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-muted);
+    letter-spacing: .5px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70px;
+  }
+
+  /* ── RESPONSIVE BREAKPOINTS ── */
+  @media (max-width: 768px) {
+
+    /* Sidebar vira drawer fixo, fora do fluxo */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      height: 100%;
+      width: 82vw;
+      max-width: 300px;
+      min-width: unset;
+      transform: translateX(-100%);
+      z-index: 200;
+      box-shadow: none;
+      overflow-y: auto;
+    }
+
+    /* Sidebar aberto */
+    #sidebar.open {
+      transform: translateX(0);
+      box-shadow: 6px 0 40px rgba(0,0,0,.6);
+    }
+
+    /* Main ocupa 100% da tela */
+    #main {
+      width: 100%;
+      min-width: 0;
+      flex: 1;
+    }
+
+    /* Overlay ativo */
+    #overlay { display: block; }
+
+    /* Hamburger visível */
+    #hamburger { display: flex; }
+
+    /* Topbar compacta */
+    .topbar { padding: 10px 12px; gap: 10px; }
+    .topbar-breadcrumb { display: none; }
+    .topbar-title { font-size: 16px; }
+    .topbar-actions .btn-ghost { display: none; }
+    .topbar-actions .btn-primary { font-size: 11px; padding: 6px 10px; }
+
+    /* Conteúdo com padding inferior para não cortar */
+    #content { padding: 14px 12px 32px; }
+
+    /* Stats em 3 colunas menores */
+    .stats-bar { gap: 8px; margin-bottom: 14px; }
+    .stat-card { padding: 10px 10px; }
+    .stat-value { font-size: 20px; }
+    .stat-label { font-size: 9px; }
+
+    /* Cards e tarefas */
+    .section-header { padding: 12px 12px; flex-wrap: wrap; gap: 6px; }
+    .section-title { font-size: 13px; letter-spacing: .4px; }
+    .section-meta { gap: 6px; }
+    .approval-badge { font-size: 9px; padding: 2px 7px; }
+
+    .task-group { padding: 10px 12px; }
+    .task-item { padding: 8px 6px; gap: 10px; }
+    .task-label { font-size: 13px; }
+
+    .section-footer { padding: 10px 12px; flex-wrap: wrap; gap: 8px; }
+    .footer-label { font-size: 10px; }
+
+    .desc-box { padding: 10px 12px; }
+    .desc-text { font-size: 12px; }
+
+    .approval-stamp { margin: 0 12px 12px; padding: 10px 12px; }
+  }
+
+  @media (max-width: 420px) {
+    #sidebar { width: 88vw; }
+
+    .stats-bar { grid-template-columns: 1fr 1fr; }
+    .stat-card:last-child { grid-column: span 2; text-align: center; }
+
+    .section-title { font-size: 12px; }
+
+    /* Esconde tags nas telas muito pequenas */
+    .task-label .tag { display: none; }
+
+    .topbar-title { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ═══════════════════════════════════════════ SIDEBAR -->
+<div id="sidebar">
+  <div class="logo-area">
+    <div class="logo-tag">// help desk processual</div>
+    <div class="logo-title">COELHO<br><span>DINIZ</span></div>
+    <div class="global-progress"><div class="global-progress-bar" id="globalBar"></div></div>
+    <div class="global-progress-label">
+      <span>Progresso geral</span>
+      <span id="globalPct">0%</span>
+    </div>
+  </div>
+
+  <nav>
+    <div class="nav-section-label">// Materiais</div>
+
+    <div class="nav-item" data-page="ofertas-diarias" onclick="openPage(this)">
+      <div class="nav-icon">
+        <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><path d="M2 2h6l2 2h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="currentColor" opacity=".25"/><path d="M1 5h18v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5z" fill="currentColor" opacity=".7"/></svg>
+      </div>
+      <span class="nav-label">OFERTAS DIÁRIAS</span>
+      <span class="nav-badge none" id="badge-ofertas-diarias">0%</span>
+    </div>
+
+    <div class="nav-item" data-page="ofertas-especiais" onclick="openPage(this)">
+      <div class="nav-icon">
+        <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><path d="M2 2h6l2 2h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="currentColor" opacity=".25"/><path d="M1 5h18v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5z" fill="currentColor" opacity=".7"/></svg>
+      </div>
+      <span class="nav-label">OFERTAS ESPECIAIS</span>
+      <span class="nav-badge none" id="badge-ofertas-especiais">0%</span>
+    </div>
+
+    <div class="nav-item" data-page="cartaz-frente-loja" onclick="openPage(this)">
+      <div class="nav-icon">
+        <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><path d="M2 2h6l2 2h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="currentColor" opacity=".25"/><path d="M1 5h18v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5z" fill="currentColor" opacity=".7"/></svg>
+      </div>
+      <span class="nav-label">CARTAZ FRENTE DE LOJA</span>
+      <span class="nav-badge none" id="badge-cartaz-frente-loja">0%</span>
+    </div>
+
+    <div class="nav-item" data-page="placas-do-dia" onclick="openPage(this)">
+      <div class="nav-icon">
+        <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><path d="M2 2h6l2 2h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="currentColor" opacity=".25"/><path d="M1 5h18v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5z" fill="currentColor" opacity=".7"/></svg>
+      </div>
+      <span class="nav-label">PLACAS DO DIA</span>
+      <span class="nav-badge none" id="badge-placas-do-dia">0%</span>
+    </div>
+
+    <div class="nav-item" data-page="instagram" onclick="openPage(this)">
+      <div class="nav-icon" style="color: #e040fb;">
+        <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><path d="M2 2h6l2 2h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="currentColor" opacity=".25"/><path d="M1 5h18v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5z" fill="currentColor" opacity=".7"/></svg>
+      </div>
+      <span class="nav-label">INSTAGRAM</span>
+      <span class="nav-badge none" id="badge-instagram">0%</span>
+    </div>
+
+    <div class="nav-item" data-page="g1" onclick="openPage(this)">
+      <div class="nav-icon" style="color: #60a5fa;">
+        <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><path d="M2 2h6l2 2h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="currentColor" opacity=".25"/><path d="M1 5h18v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5z" fill="currentColor" opacity=".7"/></svg>
+      </div>
+      <span class="nav-label">G1</span>
+      <span class="nav-badge none" id="badge-g1">0%</span>
+    </div>
+
+    <div class="nav-item" data-page="anuncios-jornal" onclick="openPage(this)">
+      <div class="nav-icon">
+        <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><path d="M2 2h6l2 2h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="currentColor" opacity=".25"/><path d="M1 5h18v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5z" fill="currentColor" opacity=".7"/></svg>
+      </div>
+      <span class="nav-label">ANÚNCIOS JORNAL DIÁRIO DO AÇO</span>
+      <span class="nav-badge none" id="badge-anuncios-jornal">0%</span>
+    </div>
+
+    <div class="nav-item" data-page="vt-tv" onclick="openPage(this)">
+      <div class="nav-icon">
+        <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><path d="M2 2h6l2 2h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="currentColor" opacity=".25"/><path d="M1 5h18v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5z" fill="currentColor" opacity=".7"/></svg>
+      </div>
+      <span class="nav-label">VT's TV COELHO DINIZ</span>
+      <span class="nav-badge none" id="badge-vt-tv">0%</span>
+    </div>
+
+    <div class="nav-section-label" style="margin-top: 8px;">// Rotina Semanal</div>
+
+    <div class="nav-item" data-page="terca-feira" onclick="openPage(this)">
+      <div class="nav-icon" style="color: var(--info);">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="3" width="16" height="14" rx="2" fill="currentColor" opacity=".2"/><rect x="1" y="3" width="16" height="5" rx="2" fill="currentColor" opacity=".6"/><path d="M5 1v3M13 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="nav-label">TERÇA — Ofertas TV</span>
+      <span class="nav-badge none" id="badge-terca-feira">0%</span>
+    </div>
+
+    <div class="nav-item" data-page="quarta-feira" onclick="openPage(this)">
+      <div class="nav-icon" style="color: var(--info);">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="3" width="16" height="14" rx="2" fill="currentColor" opacity=".2"/><rect x="1" y="3" width="16" height="5" rx="2" fill="currentColor" opacity=".6"/><path d="M5 1v3M13 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="nav-label">QUARTA — Aprovação</span>
+      <span class="nav-badge none" id="badge-quarta-feira">0%</span>
+    </div>
+
+    <div class="nav-item" data-page="quinta-feira" onclick="openPage(this)">
+      <div class="nav-icon" style="color: var(--info);">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="3" width="16" height="14" rx="2" fill="currentColor" opacity=".2"/><rect x="1" y="3" width="16" height="5" rx="2" fill="currentColor" opacity=".6"/><path d="M5 1v3M13 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="nav-label">QUINTA — Conferência</span>
+      <span class="nav-badge none" id="badge-quinta-feira">0%</span>
+    </div>
+
+    <div class="nav-item" data-page="sexta-feira" onclick="openPage(this)">
+      <div class="nav-icon" style="color: var(--info);">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="3" width="16" height="14" rx="2" fill="currentColor" opacity=".2"/><rect x="1" y="3" width="16" height="5" rx="2" fill="currentColor" opacity=".6"/><path d="M5 1v3M13 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="nav-label">SEXTA — Programação</span>
+      <span class="nav-badge none" id="badge-sexta-feira">0%</span>
+    </div>
+
+    <div class="nav-item" data-page="segunda-feira" onclick="openPage(this)">
+      <div class="nav-icon" style="color: var(--info);">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="3" width="16" height="14" rx="2" fill="currentColor" opacity=".2"/><rect x="1" y="3" width="16" height="5" rx="2" fill="currentColor" opacity=".6"/><path d="M5 1v3M13 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="nav-label">SEGUNDA — Postagens</span>
+      <span class="nav-badge none" id="badge-segunda-feira">0%</span>
+    </div>
+  </nav>
+</div>
+
+<!-- ═══════════════════════════════════════════ MAIN -->
+<div id="main">
+  <div class="topbar">
+    <button id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div style="flex:1;min-width:0;">
+      <div class="topbar-breadcrumb">HELP DESK / PROCESSOS /</div>
+      <div class="topbar-title" id="topbarTitle">Selecione um módulo</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" onclick="resetAll()">Reiniciar</button>
+      <button class="btn btn-primary" onclick="markAllDone()">Marcar tudo ✓</button>
+    </div>
+  </div>
+
+  <div id="content">
+    <div id="empty-state">
+      <div class="empty-icon">📁</div>
+      <div class="empty-title">SELECIONE UM MÓDULO</div>
+      <div class="empty-desc">Escolha um item no menu lateral para visualizar e gerenciar as tarefas do processo.</div>
+    </div>
+
+    <!-- ══ PAGE: ofertas-diarias ══ -->
+    <div class="page" id="page-ofertas-diarias">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-ofertas-diarias">0</div></div>
+        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-ofertas-diarias">0</div></div>
+        <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-ofertas-diarias">—</div></div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-folder"></div>
+          <div class="section-title">RECEBIMENTO E VERIFICAÇÃO</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-od-1">0/4</span>
+            <span class="approval-badge badge-pending" id="apv-od-1">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-od-1">
+          <div class="desc-box">
+            <div class="desc-icon">💡</div>
+            <div class="desc-text">Esta etapa garante que o material recebido esteja correto e completo antes de iniciar a produção. <strong>Ponto crítico:</strong> conferir texto e produtos antes de qualquer outra ação evita retrabalho.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Checklist de entrada</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-od1-1"></div>
+              <div class="task-label" id="tl-od1-1">Receber a lista de ofertas no e-mail <span class="tag tag-urgente">URGENTE</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-od1-2"></div>
+              <div class="task-label" id="tl-od1-2">Conferir texto e produtos da lista recebida</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-od1-3"></div>
+              <div class="task-label" id="tl-od1-3">Verificar se há produto cerveja — solicitar versão sem cerveja para TV <span class="tag tag-aprovacao">ATENÇÃO TV</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-od1-4"></div>
+              <div class="task-label" id="tl-od1-4">Subir lista no Google Drive <span class="tag tag-drive">DRIVE</span></div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-od-1">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-od-1"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-od-1" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-od-1">0/4 itens</span>
+            <button class="btn btn-success" id="apvbtn-od-1" onclick="approveSection('od-1', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-folder"></div>
+          <div class="section-title">PRODUÇÃO DE TELAS</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-od-2">0/3</span>
+            <span class="approval-badge badge-pending" id="apv-od-2">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-od-2">
+          <div class="desc-box">
+            <div class="desc-icon">🖥️</div>
+            <div class="desc-text">Fase de criação visual das telas de oferta. <strong>Regra de ouro:</strong> nenhuma tela sobe sem aprovação da Rayciane. Isso é inegociável e garante a integridade da marca.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Produção e aprovação de telas</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-od2-1"></div>
+              <div class="task-label" id="tl-od2-1">Separar e organizar as telas de oferta</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-od2-2"></div>
+              <div class="task-label" id="tl-od2-2">Enviar telas para aprovação da Rayciane <span class="tag tag-aprovacao">APROVAÇÃO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-od2-3"></div>
+              <div class="task-label" id="tl-od2-3">Após aprovação: subir telas no Drive <span class="tag tag-drive">DRIVE</span></div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-od-2">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-od-2"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-od-2" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-od-2">0/3 itens</span>
+            <button class="btn btn-success" id="apvbtn-od-2" onclick="approveSection('od-2', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-folder"></div>
+          <div class="section-title">ENTREGA E PRAZO</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-od-3">0/3</span>
+            <span class="approval-badge badge-pending" id="apv-od-3">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-od-3">
+          <div class="desc-box">
+            <div class="desc-icon">⏰</div>
+            <div class="desc-text"><strong>Atenção ao horário:</strong> se a aprovação ultrapassar 16h, acionar Letícia para informar a TV sobre o prazo de envio. Atrasos nesta fase comprometem a veiculação.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Conferência final e envio</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-od3-1"></div>
+              <div class="task-label" id="tl-od3-1">Conferir vídeo da TV antes de qualquer envio</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-od3-2"></div>
+              <div class="task-label" id="tl-od3-2">Enviar vídeo para aprovação final da Rayciane <span class="tag tag-aprovacao">APROVAÇÃO FINAL</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-od3-3"></div>
+              <div class="task-label" id="tl-od3-3">Verificar horário — se após 16h, acionar Letícia para prazo TV <span class="tag tag-horario">PRAZO 16H</span></div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-od-3">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-od-3"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-od-3" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-od-3">0/3 itens</span>
+            <button class="btn btn-success" id="apvbtn-od-3" onclick="approveSection('od-3', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: ofertas-especiais ══ -->
+    <div class="page" id="page-ofertas-especiais">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-ofertas-especiais">0</div></div>
+        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-ofertas-especiais">0</div></div>
+        <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-ofertas-especiais">—</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-folder"></div>
+          <div class="section-title">PLANEJAMENTO DE CAMPANHA ESPECIAL</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-oe-1">0/5</span>
+            <span class="approval-badge badge-pending" id="apv-oe-1">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-oe-1">
+          <div class="desc-box">
+            <div class="desc-icon">⭐</div>
+            <div class="desc-text">Ofertas especiais demandam planejamento e coordenação adicional. <strong>Diferencial:</strong> confirmação antecipada com a Rayciane sobre escopo e Facebook evita gargalos de produção.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Escopo e aprovação prévia</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-oe1-1"></div>
+              <div class="task-label" id="tl-oe1-1">Confirmar com Rayciane escopo das ofertas especiais <span class="tag tag-aprovacao">ALINHAMENTO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-oe1-2"></div>
+              <div class="task-label" id="tl-oe1-2">Verificar canais de veiculação (Facebook, TV, Instagram)</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-oe1-3"></div>
+              <div class="task-label" id="tl-oe1-3">Avisar Flávio sobre demanda adicional</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-oe1-4"></div>
+              <div class="task-label" id="tl-oe1-4">Definir limite de compra de produtos (confirmar com Rayciane)</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-oe1-5"></div>
+              <div class="task-label" id="tl-oe1-5">Subir briefing completo no Drive <span class="tag tag-drive">DRIVE</span></div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-oe-1">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-oe-1"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-oe-1" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-oe-1">0/5 itens</span>
+            <button class="btn btn-success" id="apvbtn-oe-1" onclick="approveSection('oe-1', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: cartaz-frente-loja ══ -->
+    <div class="page" id="page-cartaz-frente-loja">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-cartaz-frente-loja">0</div></div>
+        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-cartaz-frente-loja">0</div></div>
+        <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-cartaz-frente-loja">—</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-folder"></div>
+          <div class="section-title">CRIAÇÃO E REDIMENSIONAMENTO</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-cfl-1">0/4</span>
+            <span class="approval-badge badge-pending" id="apv-cfl-1">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-cfl-1">
+          <div class="desc-box">
+            <div class="desc-icon">🖨️</div>
+            <div class="desc-text">O cartaz frente de loja possui dois formatos distintos para anúncios. <strong>Fluxo obrigatório:</strong> criar → aprovar → redimensionar. Nunca pule a etapa de aprovação antes de exportar os outros formatos.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Fluxo de criação</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-cfl1-1"></div>
+              <div class="task-label" id="tl-cfl1-1">Criar cartaz frente de loja (layout principal)</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-cfl1-2"></div>
+              <div class="task-label" id="tl-cfl1-2">Enviar para aprovação da Rayciane <span class="tag tag-aprovacao">APROVAÇÃO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-cfl1-3"></div>
+              <div class="task-label" id="tl-cfl1-3">Após aprovado: redimensionar para formato de anúncio — 2 formatos</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-cfl1-4"></div>
+              <div class="task-label" id="tl-cfl1-4">Repassar caminho dos materiais para Laryssa <span class="tag tag-drive">REPASSE</span></div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-cfl-1">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-cfl-1"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-cfl-1" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-cfl-1">0/4 itens</span>
+            <button class="btn btn-success" id="apvbtn-cfl-1" onclick="approveSection('cfl-1', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: placas-do-dia ══ -->
+    <div class="page" id="page-placas-do-dia">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-placas-do-dia">0</div></div>
+        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-placas-do-dia">0</div></div>
+        <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-placas-do-dia">—</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-folder"></div>
+          <div class="section-title">PLACAS DE OFERTA — TV E PDV</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-pd-1">0/3</span>
+            <span class="approval-badge badge-pending" id="apv-pd-1">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-pd-1">
+          <div class="desc-box">
+            <div class="desc-icon">📋</div>
+            <div class="desc-text">As placas do dia são elementos de PDV que complementam a comunicação na TV. <strong>Atenção:</strong> confirmar com Rayciane se haverá limite de compra antes de finalizar qualquer placa.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Processo de placas</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-pd1-1"></div>
+              <div class="task-label" id="tl-pd1-1">Fazer placas da TV conforme lista de ofertas</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-pd1-2"></div>
+              <div class="task-label" id="tl-pd1-2">Confirmar com Rayciane se haverá limite de compra em algum produto <span class="tag tag-aprovacao">CONFIRMAÇÃO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-pd1-3"></div>
+              <div class="task-label" id="tl-pd1-3">Incluir informação de limite nas placas (se aplicável)</div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-pd-1">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-pd-1"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-pd-1" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-pd-1">0/3 itens</span>
+            <button class="btn btn-success" id="apvbtn-pd-1" onclick="approveSection('pd-1', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: instagram ══ -->
+    <div class="page" id="page-instagram">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-instagram">0</div></div>
+        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-instagram">0</div></div>
+        <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-instagram">—</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-folder"></div>
+          <div class="section-title">STORIES E CONTEÚDO SOCIAL</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-ig-1">0/5</span>
+            <span class="approval-badge badge-pending" id="apv-ig-1">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-ig-1">
+          <div class="desc-box">
+            <div class="desc-icon">📱</div>
+            <div class="desc-text"><strong>Prioridade de produção:</strong> stories são produzidos PRIMEIRO, pois o arquivo do telão de Ipatinga usa formato similar e pode ser adaptado após aprovação dos stories. Envie o mais cedo possível.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Fluxo stories e feed</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-ig1-1"></div>
+              <div class="task-label" id="tl-ig1-1">Confirmar com Rayciane se haverá mais ofertas para Facebook <span class="tag tag-aprovacao">ALINHAMENTO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-ig1-2"></div>
+              <div class="task-label" id="tl-ig1-2">Fazer os stories primeiro <span class="tag tag-urgente">PRIMEIRO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-ig1-3"></div>
+              <div class="task-label" id="tl-ig1-3">Após aprovação dos stories: editar arquivo do telão de Ipatinga <span class="tag tag-aprovacao">APÓS APROVAÇÃO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-ig1-4"></div>
+              <div class="task-label" id="tl-ig1-4">Subir telão de Ipatinga no Drive para o Flávio <span class="tag tag-drive">DRIVE</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-ig1-5"></div>
+              <div class="task-label" id="tl-ig1-5">Repassar caminho dos materiais (Facebook, stories e cartaz) para Laryssa</div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-ig-1">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-ig-1"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-ig-1" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-ig-1">0/5 itens</span>
+            <button class="btn btn-success" id="apvbtn-ig-1" onclick="approveSection('ig-1', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: g1 ══ -->
+    <div class="page" id="page-g1">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-g1">0</div></div>
+        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-g1">0</div></div>
+        <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-g1">—</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-folder"></div>
+          <div class="section-title">PROGRAMAÇÃO DE ANÚNCIOS DIGITAIS</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-g1-1">0/4</span>
+            <span class="approval-badge badge-pending" id="apv-g1-1">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-g1-1">
+          <div class="desc-box">
+            <div class="desc-icon">🌐</div>
+            <div class="desc-text">Anúncios digitais no G1 seguem uma programação rigorosa. <strong>Prazo fixo:</strong> envio às 17h00. Usar sempre a formatação de e-mail padrão das programações anteriores.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Programação G1</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-g11-1"></div>
+              <div class="task-label" id="tl-g11-1">Programar anúncios digitais conforme material aprovado</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-g11-2"></div>
+              <div class="task-label" id="tl-g11-2">Seguir formatação padrão de e-mails de programações anteriores</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-g11-3"></div>
+              <div class="task-label" id="tl-g11-3">Enviar e-mail de programação às 17h00 <span class="tag tag-horario">PRAZO 17H</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-g11-4"></div>
+              <div class="task-label" id="tl-g11-4">Confirmar recebimento e registro no sistema</div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-g1-1">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-g1-1"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-g1-1" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-g1-1">0/4 itens</span>
+            <button class="btn btn-success" id="apvbtn-g1-1" onclick="approveSection('g1-1', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: anuncios-jornal ══ -->
+    <div class="page" id="page-anuncios-jornal">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-anuncios-jornal">0</div></div>
+        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-anuncios-jornal">0</div></div>
+        <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-anuncios-jornal">—</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-folder"></div>
+          <div class="section-title">SPOT, RDI E CARRO DE SOM</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-aj-1">0/3</span>
+            <span class="approval-badge badge-pending" id="apv-aj-1">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-aj-1">
+          <div class="desc-box">
+            <div class="desc-icon">📻</div>
+            <div class="desc-text">Mídia impressa e sonora do Jornal Diário do Aço. <strong>Protocolo de envio:</strong> Spot, RDI e carro de som devem ser conferidos e enviados juntos, sempre às 17h00, usando o padrão de e-mail histórico.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Checklist de mídia impressa e sonora</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-aj1-1"></div>
+              <div class="task-label" id="tl-aj1-1">Conferir Spot, RDI e Carro de Som</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-aj1-2"></div>
+              <div class="task-label" id="tl-aj1-2">Seguir formatação padrão de e-mails anteriores</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-aj1-3"></div>
+              <div class="task-label" id="tl-aj1-3">Enviar às 17h00 <span class="tag tag-horario">PRAZO 17H</span></div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-aj-1">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-aj-1"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-aj-1" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-aj-1">0/3 itens</span>
+            <button class="btn btn-success" id="apvbtn-aj-1" onclick="approveSection('aj-1', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: vt-tv ══ -->
+    <div class="page" id="page-vt-tv">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-vt-tv">0</div></div>
+        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-vt-tv">0</div></div>
+        <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-vt-tv">—</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-folder"></div>
+          <div class="section-title">PRODUÇÃO E ENTREGA DO VT</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-vt-1">0/5</span>
+            <span class="approval-badge badge-pending" id="apv-vt-1">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-vt-1">
+          <div class="desc-box">
+            <div class="desc-icon">📺</div>
+            <div class="desc-text">VTs para a TV Coelho Diniz exigem atenção especial à regulamentação de bebidas alcoólicas. <strong>Regra obrigatória:</strong> toda peça com cerveja deve ter versão alternativa sem cerveja para veiculação em TV aberta.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Pipeline de produção do VT</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-vt1-1"></div>
+              <div class="task-label" id="tl-vt1-1">Receber lista e passar claquetes para Letícia</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-vt1-2"></div>
+              <div class="task-label" id="tl-vt1-2">Verificar se há cerveja no vídeo — solicitar versão sem cerveja para TV <span class="tag tag-urgente">REGULAMENTAÇÃO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-vt1-3"></div>
+              <div class="task-label" id="tl-vt1-3">Conferir vídeo final antes de qualquer envio</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-vt1-4"></div>
+              <div class="task-label" id="tl-vt1-4">Enviar para aprovação da Rayciane — JAMAIS liberar sem aprovação <span class="tag tag-aprovacao">APROVAÇÃO OBRIGATÓRIA</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-vt1-5"></div>
+              <div class="task-label" id="tl-vt1-5">Verificar prazo: se após 16h acionar Letícia para informar TV <span class="tag tag-horario">PRAZO 16H</span></div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-vt-1">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-vt-1"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-vt-1" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-vt-1">0/5 itens</span>
+            <button class="btn btn-success" id="apvbtn-vt-1" onclick="approveSection('vt-1', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: terca-feira ══ -->
+    <div class="page" id="page-terca-feira">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-terca-feira">0</div></div>
+        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-terca-feira">0</div></div>
+        <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-terca-feira">—</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-calendar"></div>
+          <div class="section-title">TERÇA — OFERTAS TV (QUINTA A DOMINGO)</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-ter-1">0/8</span>
+            <span class="approval-badge badge-pending" id="apv-ter-1">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-ter-1">
+          <div class="desc-box">
+            <div class="desc-icon">📅</div>
+            <div class="desc-text">A terça-feira é o dia de preparar todo o material de TV para o ciclo <strong>quinta a domingo</strong>. Cada etapa depende da anterior — siga a ordem rigorosamente para não comprometer prazos de veiculação.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Sequência terça-feira</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-ter1-1"></div>
+              <div class="task-label" id="tl-ter1-1">Receber lista no e-mail</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-ter1-2"></div>
+              <div class="task-label" id="tl-ter1-2">Conferir texto e produtos da lista</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-ter1-3"></div>
+              <div class="task-label" id="tl-ter1-3">Passar claquetes para Letícia (versão sem cerveja se necessário) <span class="tag tag-urgente">ATENÇÃO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-ter1-4"></div>
+              <div class="task-label" id="tl-ter1-4">Subir lista no Drive <span class="tag tag-drive">DRIVE</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-ter1-5"></div>
+              <div class="task-label" id="tl-ter1-5">Separar telas de oferta</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-ter1-6"></div>
+              <div class="task-label" id="tl-ter1-6">Aprovar telas com Rayciane <span class="tag tag-aprovacao">APROVAÇÃO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-ter1-7"></div>
+              <div class="task-label" id="tl-ter1-7">Subir telas aprovadas no Drive <span class="tag tag-drive">DRIVE</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-ter1-8"></div>
+              <div class="task-label" id="tl-ter1-8">Conferir vídeo TV e enviar para aprovação — só liberar após aprovação da Rayciane <span class="tag tag-aprovacao">APROVAÇÃO FINAL</span></div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-ter-1">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-ter-1"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-ter-1" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-ter-1">0/8 itens</span>
+            <button class="btn btn-success" id="apvbtn-ter-1" onclick="approveSection('ter-1', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: quarta-feira ══ -->
+    <div class="page" id="page-quarta-feira">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-quarta-feira">0</div></div>
+        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-quarta-feira">0</div></div>
+        <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-quarta-feira">—</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-calendar"></div>
+          <div class="section-title">QUARTA — APROVAÇÃO E PROGRAMAÇÃO</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-qua-1">0/12</span>
+            <span class="approval-badge badge-pending" id="apv-qua-1">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-qua-1">
+          <div class="desc-box">
+            <div class="desc-icon">⚡</div>
+            <div class="desc-text">O dia de maior densidade operacional da semana. <strong>Estratégia:</strong> priorize stories primeiro (pois o telão de Ipatinga deriva deles), depois cartaz. Todos os envios devem respeitar o horário das 17h.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Bloco 1 — Social</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-qua1-1"></div>
+              <div class="task-label" id="tl-qua1-1">Confirmar com Rayciane se terá mais ofertas para Facebook <span class="tag tag-aprovacao">ALINHAMENTO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-qua1-2"></div>
+              <div class="task-label" id="tl-qua1-2">Avisar Flávio sobre demanda</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-qua1-3"></div>
+              <div class="task-label" id="tl-qua1-3">Fazer stories <span class="tag tag-urgente">PRIMEIRO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-qua1-4"></div>
+              <div class="task-label" id="tl-qua1-4">Após aprovação dos stories: editar telão de Ipatinga e subir no Drive para Flávio <span class="tag tag-drive">DRIVE</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-qua1-5"></div>
+              <div class="task-label" id="tl-qua1-5">Fazer cartaz frente de loja → aprovar → redimensionar (2 formatos)</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-qua1-6"></div>
+              <div class="task-label" id="tl-qua1-6">Fazer placas da TV (confirmar limite de compra com Rayciane)</div>
+            </div>
+            <div class="task-divider"></div>
+            <div class="task-group-label" style="margin-top:4px;">// Bloco 2 — Mídia e programação</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-qua1-7"></div>
+              <div class="task-label" id="tl-qua1-7">Conferir Spot, RDI e Carro de Som — enviar às 17h <span class="tag tag-horario">PRAZO 17H</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-qua1-8"></div>
+              <div class="task-label" id="tl-qua1-8">Programar anúncios digitais — enviar às 17h <span class="tag tag-horario">PRAZO 17H</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-qua1-9"></div>
+              <div class="task-label" id="tl-qua1-9">Repassar caminhos dos materiais para Laryssa (Facebook, stories, cartaz)</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-qua1-10"></div>
+              <div class="task-label" id="tl-qua1-10">Solicitar texto de legenda do YouTube para Laryssa</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-qua1-11"></div>
+              <div class="task-label" id="tl-qua1-11">Programar vídeo YouTube (quarta às 17h) e repassar link para Humberto <span class="tag tag-horario">QUARTA 17H</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-qua1-12"></div>
+              <div class="task-label" id="tl-qua1-12">Programar cartaz no Talk (quinta às 07h) + status WhatsApp (quarta 17h a domingo 15h) <span class="tag tag-horario">AGENDAMENTO</span></div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-qua-1">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-qua-1"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-qua-1" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-qua-1">0/12 itens</span>
+            <button class="btn btn-success" id="apvbtn-qua-1" onclick="approveSection('qua-1', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: quinta-feira ══ -->
+    <div class="page" id="page-quinta-feira">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-quinta-feira">0</div></div>
+        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-quinta-feira">0</div></div>
+        <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-quinta-feira">—</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-calendar"></div>
+          <div class="section-title">QUINTA — CONFERÊNCIA DE POSTAGENS</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-qui-1">0/2</span>
+            <span class="approval-badge badge-pending" id="apv-qui-1">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-qui-1">
+          <div class="desc-box">
+            <div class="desc-icon">🔍</div>
+            <div class="desc-text">Quinta-feira é o dia de verificação — o material vai ao ar e precisa ser auditado. <strong>Responsável:</strong> Humberto cuida das publicações no site. Seu papel é confirmar que tudo está correto antes do pico de audiência.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Auditoria de publicações</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-qui1-1"></div>
+              <div class="task-label" id="tl-qui1-1">Confirmar que Humberto publicou telas e vídeos no site corretamente <span class="tag tag-aprovacao">VERIFICAÇÃO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-qui1-2"></div>
+              <div class="task-label" id="tl-qui1-2">Conferir se todos os vídeos dos status WhatsApp estão corretos</div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-qui-1">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-qui-1"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-qui-1" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-qui-1">0/2 itens</span>
+            <button class="btn btn-success" id="apvbtn-qui-1" onclick="approveSection('qui-1', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: sexta-feira ══ -->
+    <div class="page" id="page-sexta-feira">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-sexta-feira">0</div></div>
+        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-sexta-feira">0</div></div>
+        <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-sexta-feira">—</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-calendar"></div>
+          <div class="section-title">SEXTA — OFERTAS TV + PROGRAMAÇÃO (SEG A QUA)</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-sex-1">0/13</span>
+            <span class="approval-badge badge-pending" id="apv-sex-1">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-sex-1">
+          <div class="desc-box">
+            <div class="desc-icon">🚀</div>
+            <div class="desc-text">A sexta-feira é o dia mais estratégico: prepara TV <strong>e</strong> toda programação digital para o ciclo segunda a quarta. Envie stories o mais cedo possível — atrasos aqui impactam o fim de semana inteiro.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Bloco 1 — TV</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-sex1-1"></div>
+              <div class="task-label" id="tl-sex1-1">Receber lista no e-mail</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-sex1-2"></div>
+              <div class="task-label" id="tl-sex1-2">Conferir texto e produtos da lista</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-sex1-3"></div>
+              <div class="task-label" id="tl-sex1-3">Passar claquetes para Letícia (versão sem cerveja se necessário)</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-sex1-4"></div>
+              <div class="task-label" id="tl-sex1-4">Subir lista no Drive <span class="tag tag-drive">DRIVE</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-sex1-5"></div>
+              <div class="task-label" id="tl-sex1-5">Separar telas → Aprovar com Rayciane → Subir no Drive <span class="tag tag-aprovacao">APROVAÇÃO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-sex1-6"></div>
+              <div class="task-label" id="tl-sex1-6">Conferir vídeo TV → enviar para Rayciane → liberar só após aprovação <span class="tag tag-aprovacao">APROVAÇÃO FINAL</span></div>
+            </div>
+            <div class="task-divider"></div>
+            <div class="task-group-label" style="margin-top:4px;">// Bloco 2 — Social e programação</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-sex1-7"></div>
+              <div class="task-label" id="tl-sex1-7">Confirmar ofertas Facebook com Rayciane e avisar Flávio</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-sex1-8"></div>
+              <div class="task-label" id="tl-sex1-8">Fazer stories PRIMEIRO → telão Ipatinga → subir Drive para Flávio <span class="tag tag-urgente">ENVIE CEDO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-sex1-9"></div>
+              <div class="task-label" id="tl-sex1-9">Cartaz frente loja → aprovar → redimensionar (2 formatos) + placas TV</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-sex1-10"></div>
+              <div class="task-label" id="tl-sex1-10">Conferir Spot, RDI e Carro de Som — enviar às 17h <span class="tag tag-horario">PRAZO 17H</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-sex1-11"></div>
+              <div class="task-label" id="tl-sex1-11">Programar anúncios digitais — enviar às 17h <span class="tag tag-horario">PRAZO 17H</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-sex1-12"></div>
+              <div class="task-label" id="tl-sex1-12">Programar YouTube (domingo às 15h) + repassar link para Humberto <span class="tag tag-horario">DOMINGO 15H</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-sex1-13"></div>
+              <div class="task-label" id="tl-sex1-13">Programar cartaz Talk (segunda 07h) + status WhatsApp (domingo 15h a quarta 15h) <span class="tag tag-horario">AGENDAMENTO</span></div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-sex-1">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-sex-1"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-sex-1" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-sex-1">0/13 itens</span>
+            <button class="btn btn-success" id="apvbtn-sex-1" onclick="approveSection('sex-1', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: segunda-feira ══ -->
+    <div class="page" id="page-segunda-feira">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-segunda-feira">0</div></div>
+        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-segunda-feira">0</div></div>
+        <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-segunda-feira">—</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-type-dot dot-calendar"></div>
+          <div class="section-title">SEGUNDA — CONFERÊNCIA DE POSTAGENS</div>
+          <div class="section-meta">
+            <span class="progress-ring" id="prog-seg-1">0/2</span>
+            <span class="approval-badge badge-pending" id="apv-seg-1">PENDENTE</span>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body" id="body-seg-1">
+          <div class="desc-box">
+            <div class="desc-icon">🔍</div>
+            <div class="desc-text">Segunda-feira replica o protocolo de auditoria da quinta-feira, agora para o ciclo segunda a quarta. <strong>Ponto crítico:</strong> verificar site e status WhatsApp logo no início do dia garante que o público tenha as informações corretas.</div>
+          </div>
+          <div class="task-group">
+            <div class="task-group-label">// Auditoria segunda-feira</div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-seg1-1"></div>
+              <div class="task-label" id="tl-seg1-1">Confirmar que Humberto publicou telas e vídeos no site corretamente <span class="tag tag-aprovacao">VERIFICAÇÃO</span></div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)">
+              <div class="task-cb" id="cb-seg1-2"></div>
+              <div class="task-label" id="tl-seg1-2">Conferir se todos os vídeos dos status WhatsApp estão corretos</div>
+            </div>
+          </div>
+          <div class="approval-stamp" id="stamp-seg-1">
+            <div class="stamp-icon">✅</div>
+            <div><div class="stamp-text">ETAPA APROVADA</div><div class="stamp-time" id="stamp-time-seg-1"></div></div>
+          </div>
+          <div class="section-footer">
+            <div class="progress-bar-wrap"><div class="progress-bar-inner" id="bar-seg-1" style="width:0%"></div></div>
+            <span class="footer-label" id="fl-seg-1">0/2 itens</span>
+            <button class="btn btn-success" id="apvbtn-seg-1" onclick="approveSection('seg-1', event)">Aprovar Etapa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+// ═══════════════════════════════════ DATA MODEL
+const SECTIONS = {
+  'od-1':  { total: 4, page: 'ofertas-diarias' },
+  'od-2':  { total: 3, page: 'ofertas-diarias' },
+  'od-3':  { total: 3, page: 'ofertas-diarias' },
+  'oe-1':  { total: 5, page: 'ofertas-especiais' },
+  'cfl-1': { total: 4, page: 'cartaz-frente-loja' },
+  'pd-1':  { total: 3, page: 'placas-do-dia' },
+  'ig-1':  { total: 5, page: 'instagram' },
+  'g1-1':  { total: 4, page: 'g1' },
+  'aj-1':  { total: 3, page: 'anuncios-jornal' },
+  'vt-1':  { total: 5, page: 'vt-tv' },
+  'ter-1': { total: 8, page: 'terca-feira' },
+  'qua-1': { total:12, page: 'quarta-feira' },
+  'qui-1': { total: 2, page: 'quinta-feira' },
+  'sex-1': { total:13, page: 'sexta-feira' },
+  'seg-1': { total: 2, page: 'segunda-feira' },
+};
+
+const PAGE_SECTIONS = {};
+Object.entries(SECTIONS).forEach(([sid, { page }]) => {
+  if (!PAGE_SECTIONS[page]) PAGE_SECTIONS[page] = [];
+  PAGE_SECTIONS[page].push(sid);
+});
+
+const PAGE_TITLES = {
+  'ofertas-diarias':   'OFERTAS DIÁRIAS',
+  'ofertas-especiais': 'OFERTAS ESPECIAIS',
+  'cartaz-frente-loja':'CARTAZ FRENTE DE LOJA',
+  'placas-do-dia':     'PLACAS DO DIA',
+  'instagram':         'INSTAGRAM',
+  'g1':                'G1 — ANÚNCIOS DIGITAIS',
+  'anuncios-jornal':   'ANÚNCIOS JORNAL DIÁRIO DO AÇO',
+  'vt-tv':             "VT's TV COELHO DINIZ",
+  'terca-feira':       'TERÇA-FEIRA — OFERTAS TV',
+  'quarta-feira':      'QUARTA-FEIRA — APROVAÇÃO & PROGRAMAÇÃO',
+  'quinta-feira':      'QUINTA-FEIRA — CONFERÊNCIA',
+  'sexta-feira':       'SEXTA-FEIRA — OFERTAS + PROGRAMAÇÃO',
+  'segunda-feira':     'SEGUNDA-FEIRA — CONFERÊNCIA',
+};
+
+// ═══════════════════════════════════ STORAGE
+function getState() {
+  try { return JSON.parse(localStorage.getItem('hd_state') || '{}'); } catch { return {}; }
+}
+function saveState(s) {
+  try { localStorage.setItem('hd_state', JSON.stringify(s)); } catch {}
+}
+
+// ═══════════════════════════════════ INIT
+window.addEventListener('DOMContentLoaded', () => {
+  const s = getState();
+  // Restore checkboxes
+  document.querySelectorAll('[id^="cb-"]').forEach(el => {
+    const key = el.id;
+    if (s[key]) {
+      el.classList.add('checked');
+      const lbl = document.getElementById('tl-' + key.slice(3));
+      if (lbl) lbl.classList.add('done');
+    }
+  });
+  // Restore approvals
+  Object.keys(SECTIONS).forEach(sid => {
+    if (s['apv_' + sid]) {
+      const badge = document.getElementById('apv-' + sid);
+      const stamp = document.getElementById('stamp-' + sid);
+      const sttime = document.getElementById('stamp-time-' + sid);
+      const btn = document.getElementById('apvbtn-' + sid);
+      if (badge) { badge.textContent = 'APROVADO'; badge.className = 'approval-badge badge-approved'; }
+      if (stamp) stamp.classList.add('visible');
+      if (sttime) sttime.textContent = s['apv_' + sid];
+      if (btn) { btn.textContent = 'Revogar'; btn.className = 'btn btn-danger'; btn.onclick = (e) => revokeSection(sid, e); }
+    }
+  });
+  // Rebuild all progress
+  Object.keys(SECTIONS).forEach(updateSectionProgress);
+  updateGlobalProgress();
+  updateAllBadges();
+});
+
+// ═══════════════════════════════════ MOBILE SIDEBAR
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  if (sb.classList.contains('open')) { closeSidebar(); } else { openSidebar(); }
+}
+
+function openSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('overlay');
+  const hb = document.getElementById('hamburger');
+  sb.classList.add('open');
+  hb.classList.add('open');
+  ov.style.display = 'block';
+  requestAnimationFrame(() => ov.classList.add('visible'));
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('overlay');
+  const hb = document.getElementById('hamburger');
+  sb.classList.remove('open');
+  hb.classList.remove('open');
+  ov.classList.remove('visible');
+  document.body.style.overflow = '';
+  ov.addEventListener('transitionend', () => { ov.style.display = 'none'; }, { once: true });
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+
+// ═══════════════════════════════════ NAVIGATION
+function openPage(navEl) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  navEl.classList.add('active');
+  const page = navEl.dataset.page;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-' + page);
+  if (pg) pg.classList.add('active');
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('topbarTitle').textContent = PAGE_TITLES[page] || page;
+  updatePageStats(page);
+  // close drawer on mobile after selection
+  if (window.innerWidth <= 768) closeSidebar();
+}
+
+// ═══════════════════════════════════ TOGGLE SECTION
+function toggleSection(header) {
+  const body = header.nextElementSibling;
+  const ch = header.querySelector('.chevron');
+  const collapsed = body.classList.toggle('collapsed');
+  ch.style.transform = collapsed ? 'rotate(-90deg)' : '';
+}
+
+// ═══════════════════════════════════ TOGGLE TASK
+function toggleTask(item) {
+  const cb = item.querySelector('[id^="cb-"]');
+  const lbl = item.querySelector('[id^="tl-"]');
+  if (!cb) return;
+  const key = cb.id;
+  const checked = cb.classList.toggle('checked');
+  if (lbl) lbl.classList.toggle('done', checked);
+  const s = getState();
+  if (checked) s[key] = true; else delete s[key];
+  saveState(s);
+  // Find section
+  const sid = findSectionForCb(key);
+  if (sid) { updateSectionProgress(sid); updatePageStats(SECTIONS[sid].page); }
+  updateGlobalProgress();
+  updateAllBadges();
+}
+
+function findSectionForCb(cbId) {
+  // cbId: cb-od1-1  → section od-1, cb-qua1-12 → qua-1
+  // Logic: strip "cb-" and find matching section key
+  const stripped = cbId.replace('cb-', ''); // e.g. "od1-1"
+  for (const sid of Object.keys(SECTIONS)) {
+    const prefix = sid.replace('-', ''); // od1
+    if (stripped.startsWith(prefix + '-')) return sid;
+  }
+  return null;
+}
+
+// ═══════════════════════════════════ SECTION PROGRESS
+function updateSectionProgress(sid) {
+  const { total } = SECTIONS[sid];
+  const prefix = sid.replace('-', '');
+  let done = 0;
+  for (let i = 1; i <= total; i++) {
+    const cb = document.getElementById('cb-' + prefix + '-' + i);
+    if (cb && cb.classList.contains('checked')) done++;
+  }
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  const bar = document.getElementById('bar-' + sid);
+  const fl = document.getElementById('fl-' + sid);
+  const prog = document.getElementById('prog-' + sid);
+  if (bar) bar.style.width = pct + '%';
+  if (fl) fl.textContent = done + '/' + total + ' itens';
+  if (prog) {
+    prog.textContent = done + '/' + total;
+    prog.className = 'progress-ring' + (pct === 100 ? ' done' : pct > 0 ? ' partial' : '');
+  }
+  return { done, total, pct };
+}
+
+// ═══════════════════════════════════ APPROVAL
+function approveSection(sid, e) {
+  e.stopPropagation();
+  const now = new Date().toLocaleString('pt-BR');
+  const s = getState();
+  s['apv_' + sid] = now;
+  saveState(s);
+  const badge = document.getElementById('apv-' + sid);
+  const stamp = document.getElementById('stamp-' + sid);
+  const sttime = document.getElementById('stamp-time-' + sid);
+  const btn = document.getElementById('apvbtn-' + sid);
+  if (badge) { badge.textContent = 'APROVADO'; badge.className = 'approval-badge badge-approved'; }
+  if (stamp) stamp.classList.add('visible');
+  if (sttime) sttime.textContent = now;
+  if (btn) { btn.textContent = 'Revogar'; btn.className = 'btn btn-danger'; btn.onclick = (ev) => revokeSection(sid, ev); }
+  updateAllBadges();
+}
+
+function revokeSection(sid, e) {
+  e.stopPropagation();
+  const s = getState();
+  delete s['apv_' + sid];
+  saveState(s);
+  const badge = document.getElementById('apv-' + sid);
+  const stamp = document.getElementById('stamp-' + sid);
+  const btn = document.getElementById('apvbtn-' + sid);
+  if (badge) { badge.textContent = 'PENDENTE'; badge.className = 'approval-badge badge-pending'; }
+  if (stamp) stamp.classList.remove('visible');
+  if (btn) { btn.textContent = 'Aprovar Etapa'; btn.className = 'btn btn-success'; btn.onclick = (ev) => approveSection(sid, ev); }
+  updateAllBadges();
+}
+
+// ═══════════════════════════════════ GLOBAL PROGRESS
+function updateGlobalProgress() {
+  let totalTasks = 0, doneTasks = 0;
+  Object.keys(SECTIONS).forEach(sid => {
+    const r = updateSectionProgress(sid);
+    totalTasks += r.total;
+    doneTasks += r.done;
+  });
+  const pct = totalTasks > 0 ? Math.round(doneTasks / totalTasks * 100) : 0;
+  const bar = document.getElementById('globalBar');
+  const lbl = document.getElementById('globalPct');
+  if (bar) bar.style.width = pct + '%';
+  if (lbl) lbl.textContent = pct + '%';
+}
+
+// ═══════════════════════════════════ PAGE STATS
+function updatePageStats(page) {
+  const sids = PAGE_SECTIONS[page] || [];
+  let done = 0, total = 0;
+  sids.forEach(sid => {
+    const r = updateSectionProgress(sid);
+    done += r.done; total += r.total;
+  });
+  const sdone = document.getElementById('stat-done-' + page);
+  const spend = document.getElementById('stat-pending-' + page);
+  const sstat = document.getElementById('stat-status-' + page);
+  if (sdone) sdone.textContent = done;
+  if (spend) spend.textContent = total - done;
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  if (sstat) sstat.textContent = pct + '%';
+}
+
+// ═══════════════════════════════════ SIDEBAR BADGES
+function updateAllBadges() {
+  const pages = Object.keys(PAGE_SECTIONS);
+  pages.forEach(page => {
+    const sids = PAGE_SECTIONS[page] || [];
+    let done = 0, total = 0;
+    sids.forEach(sid => {
+      const r = updateSectionProgress(sid);
+      done += r.done; total += r.total;
+    });
+    const pct = total > 0 ? Math.round(done / total * 100) : 0;
+    const badge = document.getElementById('badge-' + page);
+    if (!badge) return;
+    badge.textContent = pct + '%';
+    badge.className = 'nav-badge' + (pct === 100 ? ' done' : pct > 0 ? ' partial' : ' none');
+    updatePageStats(page);
+  });
+}
+
+// ═══════════════════════════════════ GLOBAL ACTIONS
+function resetAll() {
+  if (!confirm('Reiniciar todo o progresso? Esta ação não pode ser desfeita.')) return;
+  localStorage.removeItem('hd_state');
+  location.reload();
+}
+
+function markAllDone() {
+  const active = document.querySelector('.page.active');
+  if (!active) return;
+  const page = active.id.replace('page-', '');
+  const cbs = active.querySelectorAll('[id^="cb-"]:not(.checked)');
+  const s = getState();
+  cbs.forEach(cb => {
+    cb.classList.add('checked');
+    s[cb.id] = true;
+    const lbl = document.getElementById('tl-' + cb.id.slice(3));
+    if (lbl) lbl.classList.add('done');
+  });
+  saveState(s);
+  Object.keys(SECTIONS).filter(sid => SECTIONS[sid].page === page).forEach(updateSectionProgress);
+  updatePageStats(page);
+  updateGlobalProgress();
+  updateAllBadges();
+}
+</script>
+</body>
+</html>
