@@ -445,6 +445,48 @@
   .tag-drive { background: rgba(62,207,142,.12); color: var(--success); }
   .tag-horario { background: rgba(245,158,11,.12); color: var(--warning); }
 
+  .task-timer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 8px;
+    padding: 3px 8px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+
+  .task-item:hover .task-timer { opacity: 1; }
+
+  .timer-display {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gold-light);
+    min-width: 54px;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+
+  .timer-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    border-radius: 50%;
+  }
+
+  .timer-btn:hover { color: var(--gold); background: rgba(200,168,75,0.1); }
+  .timer-btn.running { color: var(--success); }
+
   .task-divider {
     height: 1px;
     background: var(--border);
@@ -526,7 +568,7 @@
   /* ── STATS BAR ── */
   .stats-bar {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
     margin-bottom: 24px;
   }
@@ -556,6 +598,57 @@
   .stat-value.gold { color: var(--gold); }
   .stat-value.green { color: var(--success); }
   .stat-value.blue { color: var(--info); }
+
+  /* ── DASHBOARD & REPORT STYLES ── */
+  .dashboard-grid { display: flex; flex-direction: column; gap: 24px; }
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 30px; }
+  .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative; }
+  .report-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: rgba(0,0,0,0.15); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+  .report-table th { text-align: left; padding: 12px 16px; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted); text-transform: uppercase; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); }
+  .report-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-primary); }
+  .report-table tr:last-child td { border-bottom: none; }
+  .status-tag { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-family: 'DM Mono', monospace; }
+  
+  /* ── DASHBOARD CHARTS ── */
+  .chart-title { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; align-self: flex-start; }
+  
+  .ring-chart { position: relative; width: 140px; height: 140px; }
+  .ring-chart svg { transform: rotate(-90deg); width: 140px; height: 140px; }
+  .ring-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 10; }
+  .ring-fill { fill: none; stroke: var(--success); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1s ease-out; }
+  .ring-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--text-primary); }
+
+  .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 150px; width: 100%; border-bottom: 1px solid var(--border); padding-top: 10px; }
+  .bar-item { flex: 1; background: var(--gold); border-radius: 3px 3px 0 0; position: relative; transition: height 0.8s ease-out; min-height: 2px; opacity: 0.7; }
+  .bar-item:hover { opacity: 1; transform: scaleX(1.1); }
+  .bar-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%) rotate(45deg); transform-origin: left top; font-size: 7px; font-family: 'DM Mono', monospace; white-space: nowrap; color: var(--text-muted); }
+
+  @media print {
+    @page { size: A4 landscape; margin: 1.5cm; }
+    body { background: white !important; color: black !important; display: block !important; height: auto !important; overflow: visible !important; }
+    #sidebar, #overlay, .topbar, .topbar-actions, #hamburger, .btn-success, .btn-danger, .timer-btn { display: none !important; }
+    #main { width: 100% !important; margin: 0 !important; border: none !important; }
+    #content { padding: 0 !important; overflow: visible !important; }
+    .page { display: none !important; }
+    .page.active { display: block !important; }
+    .stat-card, .section-card, .report-table { border: 1px solid #eee !important; background: white !important; color: black !important; break-inside: avoid; }
+    .stat-value, .stat-label, .section-title, .desc-text, .task-label, td, th { color: black !important; }
+    .task-timer { background: #f9f9f9 !important; border-color: #eee !important; }
+    .logo-area { border-bottom: 3px solid #000 !important; padding-bottom: 20px; margin-bottom: 40px; }
+    .logo-title { color: black !important; font-weight: 900 !important; font-size: 32px !important; }
+
+    /* Estilos de Alta Visibilidade para o Relatório (PDF) */
+    .stat-card, .chart-card, .section-card, .report-table { border: 2px solid #000 !important; background: white !important; color: black !important; break-inside: avoid; }
+    .stat-value { color: black !important; font-weight: 900 !important; font-size: 32px !important; }
+    .stat-label { color: black !important; font-weight: 800 !important; letter-spacing: 1px !important; }
+    .chart-title { color: black !important; font-weight: 900 !important; font-size: 14px !important; border-bottom: 1px solid #000 !important; width: 100% !important; padding-bottom: 5px !important; }
+    .ring-text { color: black !important; font-weight: 900 !important; font-size: 40px !important; }
+    .report-table th { background: #eee !important; color: black !important; font-weight: 900 !important; border: 1px solid #000 !important; }
+    .report-table td { font-weight: 700 !important; border: 1px solid #000 !important; color: black !important; }
+    .bar-item { background: #000 !important; border: 1px solid #000 !important; }
+    .bar-label { font-weight: 800 !important; color: black !important; font-size: 9px !important; }
+    .status-tag { border: 1.5px solid #000 !important; font-weight: 900 !important; color: black !important; background: #f0f0f0 !important; }
+  }
 
   /* hidden section pages */
   .page { display: none; }
@@ -806,7 +899,7 @@
       <div class="nav-icon" style="color: #60a5fa;">
         <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><path d="M2 2h6l2 2h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="currentColor" opacity=".25"/><path d="M1 5h18v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5z" fill="currentColor" opacity=".7"/></svg>
       </div>
-      <span class="nav-label">G1</span>
+      <span class="nav-label">ANÚNCIOS JORNAIS</span>
       <span class="nav-badge none" id="badge-g1">0%</span>
     </div>
 
@@ -814,7 +907,7 @@
       <div class="nav-icon">
         <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><path d="M2 2h6l2 2h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="currentColor" opacity=".25"/><path d="M1 5h18v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5z" fill="currentColor" opacity=".7"/></svg>
       </div>
-      <span class="nav-label">ANÚNCIOS JORNAL DIÁRIO DO AÇO</span>
+      <span class="nav-label">SPOT, RDI E CARRO DE SOM</span>
       <span class="nav-badge none" id="badge-anuncios-jornal">0%</span>
     </div>
 
@@ -867,6 +960,15 @@
       <span class="nav-label">SEGUNDA — Postagens</span>
       <span class="nav-badge none" id="badge-segunda-feira">0%</span>
     </div>
+
+    <div class="nav-section-label" style="margin-top: 12px;">// Gestão e Resultados</div>
+    <div class="nav-item" data-page="dashboard" onclick="openPage(this)">
+      <div class="nav-icon" style="color: var(--gold);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      </div>
+      <span class="nav-label">DASHBOARD / RELATÓRIO</span>
+      <span class="nav-badge none" id="badge-dashboard">VIEW</span>
+    </div>
   </nav>
 </div>
 
@@ -899,6 +1001,7 @@
         <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-ofertas-diarias">0</div></div>
         <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-ofertas-diarias">0</div></div>
         <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-ofertas-diarias">—</div></div>
+        <div class="stat-card"><div class="stat-label">Tempo Total</div><div class="stat-value gold" id="stat-time-ofertas-diarias">00:00:00</div></div>
       </div>
 
       <div class="section-card">
@@ -918,19 +1021,19 @@
           </div>
           <div class="task-group">
             <div class="task-group-label">// Checklist de entrada</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-od1-1"></div>
               <div class="task-label" id="tl-od1-1">Receber a lista de ofertas no e-mail <span class="tag tag-urgente">URGENTE</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-od1-2"></div>
               <div class="task-label" id="tl-od1-2">Conferir texto e produtos da lista recebida</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-od1-3"></div>
               <div class="task-label" id="tl-od1-3">Verificar se há produto cerveja — solicitar versão sem cerveja para TV <span class="tag tag-aprovacao">ATENÇÃO TV</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-od1-4"></div>
               <div class="task-label" id="tl-od1-4">Subir lista no Google Drive <span class="tag tag-drive">DRIVE</span></div>
             </div>
@@ -964,15 +1067,15 @@
           </div>
           <div class="task-group">
             <div class="task-group-label">// Produção e aprovação de telas</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-od2-1"></div>
               <div class="task-label" id="tl-od2-1">Separar e organizar as telas de oferta</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-od2-2"></div>
               <div class="task-label" id="tl-od2-2">Enviar telas para aprovação da Rayciane <span class="tag tag-aprovacao">APROVAÇÃO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-od2-3"></div>
               <div class="task-label" id="tl-od2-3">Após aprovação: subir telas no Drive <span class="tag tag-drive">DRIVE</span></div>
             </div>
@@ -1006,15 +1109,15 @@
           </div>
           <div class="task-group">
             <div class="task-group-label">// Conferência final e envio</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-od3-1"></div>
               <div class="task-label" id="tl-od3-1">Conferir vídeo da TV antes de qualquer envio</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-od3-2"></div>
               <div class="task-label" id="tl-od3-2">Enviar vídeo para aprovação final da Rayciane <span class="tag tag-aprovacao">APROVAÇÃO FINAL</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-od3-3"></div>
               <div class="task-label" id="tl-od3-3">Verificar horário — se após 16h, acionar Letícia para prazo TV <span class="tag tag-horario">PRAZO 16H</span></div>
             </div>
@@ -1038,6 +1141,7 @@
         <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-ofertas-especiais">0</div></div>
         <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-ofertas-especiais">0</div></div>
         <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-ofertas-especiais">—</div></div>
+        <div class="stat-card"><div class="stat-label">Tempo Total</div><div class="stat-value gold" id="stat-time-ofertas-especiais">00:00:00</div></div>
       </div>
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)">
@@ -1056,23 +1160,23 @@
           </div>
           <div class="task-group">
             <div class="task-group-label">// Escopo e aprovação prévia</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-oe1-1"></div>
               <div class="task-label" id="tl-oe1-1">Confirmar com Rayciane escopo das ofertas especiais <span class="tag tag-aprovacao">ALINHAMENTO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-oe1-2"></div>
               <div class="task-label" id="tl-oe1-2">Verificar canais de veiculação (Facebook, TV, Instagram)</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-oe1-3"></div>
               <div class="task-label" id="tl-oe1-3">Avisar Flávio sobre demanda adicional</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-oe1-4"></div>
               <div class="task-label" id="tl-oe1-4">Definir limite de compra de produtos (confirmar com Rayciane)</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-oe1-5"></div>
               <div class="task-label" id="tl-oe1-5">Subir briefing completo no Drive <span class="tag tag-drive">DRIVE</span></div>
             </div>
@@ -1096,6 +1200,7 @@
         <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-cartaz-frente-loja">0</div></div>
         <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-cartaz-frente-loja">0</div></div>
         <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-cartaz-frente-loja">—</div></div>
+        <div class="stat-card"><div class="stat-label">Tempo Total</div><div class="stat-value gold" id="stat-time-cartaz-frente-loja">00:00:00</div></div>
       </div>
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)">
@@ -1114,19 +1219,19 @@
           </div>
           <div class="task-group">
             <div class="task-group-label">// Fluxo de criação</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-cfl1-1"></div>
               <div class="task-label" id="tl-cfl1-1">Criar cartaz frente de loja (layout principal)</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-cfl1-2"></div>
               <div class="task-label" id="tl-cfl1-2">Enviar para aprovação da Rayciane <span class="tag tag-aprovacao">APROVAÇÃO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-cfl1-3"></div>
               <div class="task-label" id="tl-cfl1-3">Após aprovado: redimensionar para formato de anúncio — 2 formatos</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-cfl1-4"></div>
               <div class="task-label" id="tl-cfl1-4">Repassar caminho dos materiais para Laryssa <span class="tag tag-drive">REPASSE</span></div>
             </div>
@@ -1150,6 +1255,7 @@
         <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-placas-do-dia">0</div></div>
         <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-placas-do-dia">0</div></div>
         <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-placas-do-dia">—</div></div>
+        <div class="stat-card"><div class="stat-label">Tempo Total</div><div class="stat-value gold" id="stat-time-placas-do-dia">00:00:00</div></div>
       </div>
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)">
@@ -1168,15 +1274,15 @@
           </div>
           <div class="task-group">
             <div class="task-group-label">// Processo de placas</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-pd1-1"></div>
               <div class="task-label" id="tl-pd1-1">Fazer placas da TV conforme lista de ofertas</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-pd1-2"></div>
               <div class="task-label" id="tl-pd1-2">Confirmar com Rayciane se haverá limite de compra em algum produto <span class="tag tag-aprovacao">CONFIRMAÇÃO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-pd1-3"></div>
               <div class="task-label" id="tl-pd1-3">Incluir informação de limite nas placas (se aplicável)</div>
             </div>
@@ -1200,6 +1306,7 @@
         <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-instagram">0</div></div>
         <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-instagram">0</div></div>
         <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-instagram">—</div></div>
+        <div class="stat-card"><div class="stat-label">Tempo Total</div><div class="stat-value gold" id="stat-time-instagram">00:00:00</div></div>
       </div>
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)">
@@ -1218,23 +1325,23 @@
           </div>
           <div class="task-group">
             <div class="task-group-label">// Fluxo stories e feed</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-ig1-1"></div>
               <div class="task-label" id="tl-ig1-1">Confirmar com Rayciane se haverá mais ofertas para Facebook <span class="tag tag-aprovacao">ALINHAMENTO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-ig1-2"></div>
               <div class="task-label" id="tl-ig1-2">Fazer os stories primeiro <span class="tag tag-urgente">PRIMEIRO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-ig1-3"></div>
               <div class="task-label" id="tl-ig1-3">Após aprovação dos stories: editar arquivo do telão de Ipatinga <span class="tag tag-aprovacao">APÓS APROVAÇÃO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-ig1-4"></div>
               <div class="task-label" id="tl-ig1-4">Subir telão de Ipatinga no Drive para o Flávio <span class="tag tag-drive">DRIVE</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-ig1-5"></div>
               <div class="task-label" id="tl-ig1-5">Repassar caminho dos materiais (Facebook, stories e cartaz) para Laryssa</div>
             </div>
@@ -1258,11 +1365,12 @@
         <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-g1">0</div></div>
         <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-g1">0</div></div>
         <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-g1">—</div></div>
+        <div class="stat-card"><div class="stat-label">Tempo Total</div><div class="stat-value gold" id="stat-time-g1">00:00:00</div></div>
       </div>
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)">
           <div class="section-type-dot dot-folder"></div>
-          <div class="section-title">PROGRAMAÇÃO DE ANÚNCIOS DIGITAIS</div>
+          <div class="section-title">ANÚNCIOS JORNAIS</div>
           <div class="section-meta">
             <span class="progress-ring" id="prog-g1-1">0/4</span>
             <span class="approval-badge badge-pending" id="apv-g1-1">PENDENTE</span>
@@ -1272,23 +1380,23 @@
         <div class="section-body" id="body-g1-1">
           <div class="desc-box">
             <div class="desc-icon">🌐</div>
-            <div class="desc-text">Anúncios digitais no G1 seguem uma programação rigorosa. <strong>Prazo fixo:</strong> envio às 17h00. Usar sempre a formatação de e-mail padrão das programações anteriores.</div>
+            <div class="desc-text">Anúncios nos jornais seguem uma programação rigorosa. <strong>Prazo fixo:</strong> envio às 17h00. Usar sempre a formatação de e-mail padrão das programações anteriores.</div>
           </div>
           <div class="task-group">
             <div class="task-group-label">// Programação G1</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-g11-1"></div>
               <div class="task-label" id="tl-g11-1">Programar anúncios digitais conforme material aprovado</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-g11-2"></div>
               <div class="task-label" id="tl-g11-2">Seguir formatação padrão de e-mails de programações anteriores</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-g11-3"></div>
               <div class="task-label" id="tl-g11-3">Enviar e-mail de programação às 17h00 <span class="tag tag-horario">PRAZO 17H</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-g11-4"></div>
               <div class="task-label" id="tl-g11-4">Confirmar recebimento e registro no sistema</div>
             </div>
@@ -1312,6 +1420,7 @@
         <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-anuncios-jornal">0</div></div>
         <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-anuncios-jornal">0</div></div>
         <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-anuncios-jornal">—</div></div>
+        <div class="stat-card"><div class="stat-label">Tempo Total</div><div class="stat-value gold" id="stat-time-anuncios-jornal">00:00:00</div></div>
       </div>
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)">
@@ -1326,19 +1435,19 @@
         <div class="section-body" id="body-aj-1">
           <div class="desc-box">
             <div class="desc-icon">📻</div>
-            <div class="desc-text">Mídia impressa e sonora do Jornal Diário do Aço. <strong>Protocolo de envio:</strong> Spot, RDI e carro de som devem ser conferidos e enviados juntos, sempre às 17h00, usando o padrão de e-mail histórico.</div>
+            <div class="desc-text">Mídia sonora (Spot, RDI e Carro de Som). <strong>Protocolo de envio:</strong> Spot, RDI e carro de som devem ser conferidos e enviados juntos, sempre às 17h00, usando o padrão de e-mail histórico.</div>
           </div>
           <div class="task-group">
             <div class="task-group-label">// Checklist de mídia impressa e sonora</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-aj1-1"></div>
               <div class="task-label" id="tl-aj1-1">Conferir Spot, RDI e Carro de Som</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-aj1-2"></div>
               <div class="task-label" id="tl-aj1-2">Seguir formatação padrão de e-mails anteriores</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-aj1-3"></div>
               <div class="task-label" id="tl-aj1-3">Enviar às 17h00 <span class="tag tag-horario">PRAZO 17H</span></div>
             </div>
@@ -1362,6 +1471,7 @@
         <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-vt-tv">0</div></div>
         <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-vt-tv">0</div></div>
         <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-vt-tv">—</div></div>
+        <div class="stat-card"><div class="stat-label">Tempo Total</div><div class="stat-value gold" id="stat-time-vt-tv">00:00:00</div></div>
       </div>
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)">
@@ -1380,23 +1490,23 @@
           </div>
           <div class="task-group">
             <div class="task-group-label">// Pipeline de produção do VT</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-vt1-1"></div>
               <div class="task-label" id="tl-vt1-1">Receber lista e passar claquetes para Letícia</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-vt1-2"></div>
               <div class="task-label" id="tl-vt1-2">Verificar se há cerveja no vídeo — solicitar versão sem cerveja para TV <span class="tag tag-urgente">REGULAMENTAÇÃO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-vt1-3"></div>
               <div class="task-label" id="tl-vt1-3">Conferir vídeo final antes de qualquer envio</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-vt1-4"></div>
               <div class="task-label" id="tl-vt1-4">Enviar para aprovação da Rayciane — JAMAIS liberar sem aprovação <span class="tag tag-aprovacao">APROVAÇÃO OBRIGATÓRIA</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-vt1-5"></div>
               <div class="task-label" id="tl-vt1-5">Verificar prazo: se após 16h acionar Letícia para informar TV <span class="tag tag-horario">PRAZO 16H</span></div>
             </div>
@@ -1420,6 +1530,7 @@
         <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-terca-feira">0</div></div>
         <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-terca-feira">0</div></div>
         <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-terca-feira">—</div></div>
+        <div class="stat-card"><div class="stat-label">Tempo Total</div><div class="stat-value gold" id="stat-time-terca-feira">00:00:00</div></div>
       </div>
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)">
@@ -1438,35 +1549,35 @@
           </div>
           <div class="task-group">
             <div class="task-group-label">// Sequência terça-feira</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-ter1-1"></div>
               <div class="task-label" id="tl-ter1-1">Receber lista no e-mail</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-ter1-2"></div>
               <div class="task-label" id="tl-ter1-2">Conferir texto e produtos da lista</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-ter1-3"></div>
               <div class="task-label" id="tl-ter1-3">Passar claquetes para Letícia (versão sem cerveja se necessário) <span class="tag tag-urgente">ATENÇÃO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-ter1-4"></div>
               <div class="task-label" id="tl-ter1-4">Subir lista no Drive <span class="tag tag-drive">DRIVE</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-ter1-5"></div>
               <div class="task-label" id="tl-ter1-5">Separar telas de oferta</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-ter1-6"></div>
               <div class="task-label" id="tl-ter1-6">Aprovar telas com Rayciane <span class="tag tag-aprovacao">APROVAÇÃO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-ter1-7"></div>
               <div class="task-label" id="tl-ter1-7">Subir telas aprovadas no Drive <span class="tag tag-drive">DRIVE</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-ter1-8"></div>
               <div class="task-label" id="tl-ter1-8">Conferir vídeo TV e enviar para aprovação — só liberar após aprovação da Rayciane <span class="tag tag-aprovacao">APROVAÇÃO FINAL</span></div>
             </div>
@@ -1490,6 +1601,7 @@
         <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-quarta-feira">0</div></div>
         <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-quarta-feira">0</div></div>
         <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-quarta-feira">—</div></div>
+        <div class="stat-card"><div class="stat-label">Tempo Total</div><div class="stat-value gold" id="stat-time-quarta-feira">00:00:00</div></div>
       </div>
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)">
@@ -1508,53 +1620,53 @@
           </div>
           <div class="task-group">
             <div class="task-group-label">// Bloco 1 — Social</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-qua1-1"></div>
               <div class="task-label" id="tl-qua1-1">Confirmar com Rayciane se terá mais ofertas para Facebook <span class="tag tag-aprovacao">ALINHAMENTO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-qua1-2"></div>
               <div class="task-label" id="tl-qua1-2">Avisar Flávio sobre demanda</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-qua1-3"></div>
               <div class="task-label" id="tl-qua1-3">Fazer stories <span class="tag tag-urgente">PRIMEIRO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-qua1-4"></div>
               <div class="task-label" id="tl-qua1-4">Após aprovação dos stories: editar telão de Ipatinga e subir no Drive para Flávio <span class="tag tag-drive">DRIVE</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-qua1-5"></div>
               <div class="task-label" id="tl-qua1-5">Fazer cartaz frente de loja → aprovar → redimensionar (2 formatos)</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-qua1-6"></div>
               <div class="task-label" id="tl-qua1-6">Fazer placas da TV (confirmar limite de compra com Rayciane)</div>
             </div>
             <div class="task-divider"></div>
             <div class="task-group-label" style="margin-top:4px;">// Bloco 2 — Mídia e programação</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-qua1-7"></div>
               <div class="task-label" id="tl-qua1-7">Conferir Spot, RDI e Carro de Som — enviar às 17h <span class="tag tag-horario">PRAZO 17H</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-qua1-8"></div>
-              <div class="task-label" id="tl-qua1-8">Programar anúncios digitais — enviar às 17h <span class="tag tag-horario">PRAZO 17H</span></div>
+              <div class="task-label" id="tl-qua1-8">Programar anúncios nos jornais — enviar às 17h <span class="tag tag-horario">PRAZO 17H</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-qua1-9"></div>
               <div class="task-label" id="tl-qua1-9">Repassar caminhos dos materiais para Laryssa (Facebook, stories, cartaz)</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-qua1-10"></div>
               <div class="task-label" id="tl-qua1-10">Solicitar texto de legenda do YouTube para Laryssa</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-qua1-11"></div>
               <div class="task-label" id="tl-qua1-11">Programar vídeo YouTube (quarta às 17h) e repassar link para Humberto <span class="tag tag-horario">QUARTA 17H</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-qua1-12"></div>
               <div class="task-label" id="tl-qua1-12">Programar cartaz no Talk (quinta às 07h) + status WhatsApp (quarta 17h a domingo 15h) <span class="tag tag-horario">AGENDAMENTO</span></div>
             </div>
@@ -1578,6 +1690,7 @@
         <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-quinta-feira">0</div></div>
         <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-quinta-feira">0</div></div>
         <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-quinta-feira">—</div></div>
+        <div class="stat-card"><div class="stat-label">Tempo Total</div><div class="stat-value gold" id="stat-time-quinta-feira">00:00:00</div></div>
       </div>
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)">
@@ -1596,11 +1709,11 @@
           </div>
           <div class="task-group">
             <div class="task-group-label">// Auditoria de publicações</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-qui1-1"></div>
               <div class="task-label" id="tl-qui1-1">Confirmar que Humberto publicou telas e vídeos no site corretamente <span class="tag tag-aprovacao">VERIFICAÇÃO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-qui1-2"></div>
               <div class="task-label" id="tl-qui1-2">Conferir se todos os vídeos dos status WhatsApp estão corretos</div>
             </div>
@@ -1624,6 +1737,7 @@
         <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-sexta-feira">0</div></div>
         <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-sexta-feira">0</div></div>
         <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-sexta-feira">—</div></div>
+        <div class="stat-card"><div class="stat-label">Tempo Total</div><div class="stat-value gold" id="stat-time-sexta-feira">00:00:00</div></div>
       </div>
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)">
@@ -1642,57 +1756,57 @@
           </div>
           <div class="task-group">
             <div class="task-group-label">// Bloco 1 — TV</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-sex1-1"></div>
               <div class="task-label" id="tl-sex1-1">Receber lista no e-mail</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-sex1-2"></div>
               <div class="task-label" id="tl-sex1-2">Conferir texto e produtos da lista</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-sex1-3"></div>
               <div class="task-label" id="tl-sex1-3">Passar claquetes para Letícia (versão sem cerveja se necessário)</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-sex1-4"></div>
               <div class="task-label" id="tl-sex1-4">Subir lista no Drive <span class="tag tag-drive">DRIVE</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-sex1-5"></div>
               <div class="task-label" id="tl-sex1-5">Separar telas → Aprovar com Rayciane → Subir no Drive <span class="tag tag-aprovacao">APROVAÇÃO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-sex1-6"></div>
               <div class="task-label" id="tl-sex1-6">Conferir vídeo TV → enviar para Rayciane → liberar só após aprovação <span class="tag tag-aprovacao">APROVAÇÃO FINAL</span></div>
             </div>
             <div class="task-divider"></div>
             <div class="task-group-label" style="margin-top:4px;">// Bloco 2 — Social e programação</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-sex1-7"></div>
               <div class="task-label" id="tl-sex1-7">Confirmar ofertas Facebook com Rayciane e avisar Flávio</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-sex1-8"></div>
               <div class="task-label" id="tl-sex1-8">Fazer stories PRIMEIRO → telão Ipatinga → subir Drive para Flávio <span class="tag tag-urgente">ENVIE CEDO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-sex1-9"></div>
               <div class="task-label" id="tl-sex1-9">Cartaz frente loja → aprovar → redimensionar (2 formatos) + placas TV</div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-sex1-10"></div>
               <div class="task-label" id="tl-sex1-10">Conferir Spot, RDI e Carro de Som — enviar às 17h <span class="tag tag-horario">PRAZO 17H</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-sex1-11"></div>
-              <div class="task-label" id="tl-sex1-11">Programar anúncios digitais — enviar às 17h <span class="tag tag-horario">PRAZO 17H</span></div>
+              <div class="task-label" id="tl-sex1-11">Programar anúncios nos jornais — enviar às 17h <span class="tag tag-horario">PRAZO 17H</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-sex1-12"></div>
               <div class="task-label" id="tl-sex1-12">Programar YouTube (domingo às 15h) + repassar link para Humberto <span class="tag tag-horario">DOMINGO 15H</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-sex1-13"></div>
               <div class="task-label" id="tl-sex1-13">Programar cartaz Talk (segunda 07h) + status WhatsApp (domingo 15h a quarta 15h) <span class="tag tag-horario">AGENDAMENTO</span></div>
             </div>
@@ -1716,6 +1830,7 @@
         <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green" id="stat-done-segunda-feira">0</div></div>
         <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value gold" id="stat-pending-segunda-feira">0</div></div>
         <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value blue" id="stat-status-segunda-feira">—</div></div>
+        <div class="stat-card"><div class="stat-label">Tempo Total</div><div class="stat-value gold" id="stat-time-segunda-feira">00:00:00</div></div>
       </div>
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)">
@@ -1734,11 +1849,11 @@
           </div>
           <div class="task-group">
             <div class="task-group-label">// Auditoria segunda-feira</div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-seg1-1"></div>
               <div class="task-label" id="tl-seg1-1">Confirmar que Humberto publicou telas e vídeos no site corretamente <span class="tag tag-aprovacao">VERIFICAÇÃO</span></div>
             </div>
-            <div class="task-item" onclick="toggleTask(this)">
+            <div class="task-item" onclick="handleTaskClick(event, this)">
               <div class="task-cb" id="cb-seg1-2"></div>
               <div class="task-label" id="tl-seg1-2">Conferir se todos os vídeos dos status WhatsApp estão corretos</div>
             </div>
@@ -1753,6 +1868,17 @@
             <button class="btn btn-success" id="apvbtn-seg-1" onclick="approveSection('seg-1', event)">Aprovar Etapa</button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: dashboard ══ -->
+    <div class="page" id="page-dashboard">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;" class="logo-area">
+        <h1 class="page-title logo-title">DASHBOARD DE DESEMPENHO</h1>
+        <button class="btn btn-success" onclick="downloadReport()" style="padding: 10px 20px;">Gerar Relatório A4 (PDF) ↓</button>
+      </div>
+      <div id="dashboard-content" class="dashboard-grid">
+         <!-- Populated via JS -->
       </div>
     </div>
 
@@ -1791,14 +1917,15 @@ const PAGE_TITLES = {
   'cartaz-frente-loja':'CARTAZ FRENTE DE LOJA',
   'placas-do-dia':     'PLACAS DO DIA',
   'instagram':         'INSTAGRAM',
-  'g1':                'G1 — ANÚNCIOS DIGITAIS',
-  'anuncios-jornal':   'ANÚNCIOS JORNAL DIÁRIO DO AÇO',
+  'g1':                'ANÚNCIOS JORNAIS',
+  'anuncios-jornal':   'SPOT, RDI E CARRO DE SOM',
   'vt-tv':             "VT's TV COELHO DINIZ",
   'terca-feira':       'TERÇA-FEIRA — OFERTAS TV',
   'quarta-feira':      'QUARTA-FEIRA — APROVAÇÃO & PROGRAMAÇÃO',
   'quinta-feira':      'QUINTA-FEIRA — CONFERÊNCIA',
   'sexta-feira':       'SEXTA-FEIRA — OFERTAS + PROGRAMAÇÃO',
   'segunda-feira':     'SEGUNDA-FEIRA — CONFERÊNCIA',
+  'dashboard':         'DASHBOARD / RELATÓRIO GERAL',
 };
 
 // ═══════════════════════════════════ STORAGE
@@ -1809,10 +1936,243 @@ function saveState(s) {
   try { localStorage.setItem('hd_state', JSON.stringify(s)); } catch {}
 }
 
+// ═══════════════════════════════════ TIMERS LOGIC
+let timerInterval = null;
+
+function formatTime(s) {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sc = s % 60;
+  return [h, m, sc].map(v => v < 10 ? '0' + v : v).join(':');
+}
+
+function calculateSectionTime(sid) {
+  const s = getState();
+  if (!s.timers) return 0;
+  let total = 0;
+  const prefix = sid.replace('-', ''); // 'od-1' -> 'od1'
+  Object.keys(s.timers).forEach(tid => {
+    // Check if tid (e.g. 'cb-od1-1') belongs to section prefix
+    if (tid.startsWith('cb-' + prefix + '-')) {
+      total += s.timers[tid].seconds;
+    }
+  });
+  return total;
+}
+
+function renderCharts() {
+  const s = getState();
+  let totalTasks = 0, doneTasks = 0;
+  let moduleTimes = [];
+  let maxTime = 1;
+  
+  Object.keys(PAGE_SECTIONS).forEach(page => {
+    if (page === 'dashboard') return;
+    let pageSec = 0;
+    PAGE_SECTIONS[page].forEach(sid => {
+      const r = updateSectionProgress(sid);
+      totalTasks += r.total;
+      doneTasks += r.done;
+      pageSec += calculateSectionTime(sid);
+    });
+    moduleTimes.push({ name: (PAGE_TITLES[page] || page).substring(0, 10), time: pageSec });
+    if (pageSec > maxTime) maxTime = pageSec;
+  });
+  
+  const globalPct = totalTasks > 0 ? Math.round(doneTasks/totalTasks * 100) : 0;
+  const radius = 60;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (globalPct / 100) * circumference;
+  
+  const ringHtml = `
+    <div class="chart-card">
+      <div class="chart-title">Progresso Global de Tarefas</div>
+      <div class="ring-chart">
+        <svg viewBox="0 0 140 140">
+          <circle class="ring-bg" cx="70" cy="70" r="${radius}" />
+          <circle class="ring-fill" cx="70" cy="70" r="${radius}" 
+            style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset}" />
+        </svg>
+        <div class="ring-text">${globalPct}%</div>
+      </div>
+    </div>`;
+    
+  let barsHtml = '';
+  // Top 7 for rendering space
+  moduleTimes.slice(0, 7).forEach(m => {
+    const h = Math.max(2, (m.time / maxTime) * 100);
+    barsHtml += `<div class="bar-item" style="height: ${h}%">
+      <div class="bar-label">${m.name}</div>
+    </div>`;
+  });
+  
+  const barHtml = `
+    <div class="chart-card">
+      <div class="chart-title">Distribuição de Tempo Ocupado</div>
+      <div class="bar-chart">${barsHtml}</div>
+    </div>`;
+    
+  return `<div class="charts-row">${ringHtml}${barHtml}</div>`;
+}
+
+function renderDashboard() {
+  const container = document.getElementById('dashboard-content');
+  if (!container) return;
+  const s = getState();
+  
+  let html = renderCharts();
+  
+  html += `<table class="report-table">
+    <thead>
+      <tr>
+        <th>PROCESSO / MÓDULO</th>
+        <th>CONCLUÍDO</th>
+        <th>TEMPO TOTAL</th>
+        <th>STATUS</th>
+      </tr>
+    </thead>
+    <tbody>`;
+  
+  Object.keys(PAGE_SECTIONS).forEach(page => {
+    if (page === 'dashboard') return;
+    let totalSec = 0;
+    let done = 0, total = 0;
+    PAGE_SECTIONS[page].forEach(sid => {
+      totalSec += calculateSectionTime(sid);
+      const r = updateSectionProgress(sid);
+      done += r.done; total += r.total;
+    });
+    const pct = total > 0 ? Math.round(done/total * 100) : 0;
+    let statusLabel = pct === 100 ? 'FINALIZADO' : pct > 0 ? 'EM ANDAMENTO' : 'PENDENTE';
+    let statusColor = pct === 100 ? 'var(--success)' : pct > 0 ? 'var(--warning)' : 'var(--text-muted)';
+    
+    html += `<tr>
+      <td style="font-weight:600">${PAGE_TITLES[page] || page}</td>
+      <td style="font-family:'DM Mono'">${done} / ${total}</td>
+      <td style="font-family:'DM Mono'; color:var(--gold)">${formatTime(totalSec)}</td>
+      <td><span class="status-tag" style="background:rgba(255,255,255,0.05); color:${statusColor}; border:1px solid ${statusColor}33">${statusLabel} (${pct}%)</span></td>
+    </tr>`;
+  });
+  
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+function downloadReport() {
+  renderDashboard();
+  const title = document.getElementById('topbarTitle');
+  const oldTitle = title.textContent;
+  title.textContent = "RELATÓRIO DE PROCESSO - " + new Date().toLocaleDateString();
+  window.print();
+  title.textContent = oldTitle;
+}
+
+function injectTimers() {
+  const tasks = document.querySelectorAll('.task-item');
+  const s = getState();
+  if (!s.timers) s.timers = {};
+  
+  tasks.forEach(item => {
+    const cb = item.querySelector('[id^="cb-"]');
+    if (!cb) return;
+    const taskId = cb.id;
+    
+    const timerWrap = document.createElement('div');
+    timerWrap.className = 'task-timer';
+    timerWrap.onclick = (e) => e.stopPropagation();
+    
+    const display = document.createElement('span');
+    display.className = 'timer-display';
+    display.id = 'timer-val-' + taskId;
+    const seconds = s.timers[taskId] ? s.timers[taskId].seconds : 0;
+    display.textContent = formatTime(seconds);
+    
+    const btn = document.createElement('button');
+    btn.className = 'timer-btn';
+    const isRunning = s.timers[taskId] && s.timers[taskId].running;
+    if (isRunning) btn.classList.add('running');
+    btn.innerHTML = isRunning ? 
+      '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>' : 
+      '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+    
+    btn.onclick = (e) => { e.stopPropagation(); toggleTimer(taskId); };
+    
+    timerWrap.appendChild(display);
+    timerWrap.appendChild(btn);
+    item.appendChild(timerWrap);
+  });
+  startGlobalInterval();
+}
+
+function toggleTimer(taskId) {
+  const s = getState();
+  if (!s.timers) s.timers = {};
+  if (!s.timers[taskId]) s.timers[taskId] = { seconds: 0, running: false };
+  
+  const isRunning = !s.timers[taskId].running;
+  
+  // Mutual Exclusion: Stop all other timers if we are starting this one
+  if (isRunning) {
+    Object.keys(s.timers).forEach(tid => {
+      if (tid !== taskId && s.timers[tid].running) {
+        s.timers[tid].running = false;
+        const otherDisplay = document.getElementById('timer-val-' + tid);
+        if (otherDisplay) {
+          const otherBtn = otherDisplay.nextElementSibling;
+          otherBtn.classList.remove('running');
+          otherBtn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+        }
+      }
+    });
+  }
+
+  s.timers[taskId].running = isRunning;
+  saveState(s);
+  
+  const display = document.getElementById('timer-val-' + taskId);
+  if (display) {
+    const btn = display.nextElementSibling;
+    btn.classList.toggle('running', isRunning);
+    btn.innerHTML = isRunning ? 
+      '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>' : 
+      '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+  }
+}
+
+function handleTaskClick(e, item) {
+  // If clicked directly on the checkbox div
+  if (e.target.classList.contains('task-cb')) {
+    toggleTask(item);
+    return;
+  }
+  
+  const cb = item.querySelector('[id^="cb-"]');
+  if (cb) toggleTimer(cb.id);
+}
+
+function startGlobalInterval() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    const s = getState();
+    if (!s.timers) return;
+    let changed = false;
+    Object.keys(s.timers).forEach(tid => {
+      if (s.timers[tid].running) {
+        s.timers[tid].seconds++;
+        changed = true;
+        const display = document.getElementById('timer-val-' + tid);
+        if (display) display.textContent = formatTime(s.timers[tid].seconds);
+      }
+    });
+    if (changed) saveState(s);
+  }, 1000);
+}
+
 // ═══════════════════════════════════ INIT
 window.addEventListener('DOMContentLoaded', () => {
   const s = getState();
   // Restore checkboxes
+  injectTimers();
   document.querySelectorAll('[id^="cb-"]').forEach(el => {
     const key = el.id;
     if (s[key]) {
@@ -1830,7 +2190,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('apvbtn-' + sid);
       if (badge) { badge.textContent = 'APROVADO'; badge.className = 'approval-badge badge-approved'; }
       if (stamp) stamp.classList.add('visible');
-      if (sttime) sttime.textContent = s['apv_' + sid];
+      if (sttime) sttime.textContent = s['apv_time_' + sid] ? 'TEMPO DE EXECUÇÃO: ' + formatTime(s['apv_time_' + sid]) : '';
       if (btn) { btn.textContent = 'Revogar'; btn.className = 'btn btn-danger'; btn.onclick = (e) => revokeSection(sid, e); }
     }
   });
@@ -1880,6 +2240,7 @@ function openPage(navEl) {
   if (pg) pg.classList.add('active');
   document.getElementById('empty-state').style.display = 'none';
   document.getElementById('topbarTitle').textContent = PAGE_TITLES[page] || page;
+  if (page === 'dashboard') renderDashboard();
   updatePageStats(page);
   // close drawer on mobile after selection
   if (window.innerWidth <= 768) closeSidebar();
@@ -1902,7 +2263,37 @@ function toggleTask(item) {
   const checked = cb.classList.toggle('checked');
   if (lbl) lbl.classList.toggle('done', checked);
   const s = getState();
-  if (checked) s[key] = true; else delete s[key];
+  if (checked) { 
+    s[key] = true;
+    // Auto-pause timer on complete
+    if (s.timers && s.timers[key]) {
+      s.timers[key].running = false;
+      const display = document.getElementById('timer-val-' + key);
+      if (display) {
+        const btn = display.nextElementSibling;
+        btn.classList.remove('running');
+        btn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+      }
+    }
+    // Auto-start next timer
+    let nextItem = item.nextElementSibling;
+    while (nextItem && !nextItem.classList.contains('task-item')) {
+      nextItem = nextItem.nextElementSibling;
+    }
+    if (nextItem) {
+      const nextCb = nextItem.querySelector('[id^="cb-"]');
+      if (nextCb && !nextCb.classList.contains('checked')) {
+        const nextId = nextCb.id;
+        if (!s.timers) s.timers = {};
+        // Auto-start next timer logic
+        saveState(s); 
+        toggleTimer(nextId);
+        return; 
+      }
+    }
+  } else {
+    delete s[key];
+  }
   saveState(s);
   // Find section
   const sid = findSectionForCb(key);
@@ -1949,15 +2340,20 @@ function approveSection(sid, e) {
   e.stopPropagation();
   const now = new Date().toLocaleString('pt-BR');
   const s = getState();
+  const timeUsed = calculateSectionTime(sid);
+  
   s['apv_' + sid] = now;
+  s['apv_time_' + sid] = timeUsed;
   saveState(s);
+  
   const badge = document.getElementById('apv-' + sid);
   const stamp = document.getElementById('stamp-' + sid);
   const sttime = document.getElementById('stamp-time-' + sid);
   const btn = document.getElementById('apvbtn-' + sid);
+  
   if (badge) { badge.textContent = 'APROVADO'; badge.className = 'approval-badge badge-approved'; }
   if (stamp) stamp.classList.add('visible');
-  if (sttime) sttime.textContent = now;
+  if (sttime) sttime.textContent = now + ' | TEMPO: ' + formatTime(timeUsed);
   if (btn) { btn.textContent = 'Revogar'; btn.className = 'btn btn-danger'; btn.onclick = (ev) => revokeSection(sid, ev); }
   updateAllBadges();
 }
@@ -2002,10 +2398,16 @@ function updatePageStats(page) {
   const sdone = document.getElementById('stat-done-' + page);
   const spend = document.getElementById('stat-pending-' + page);
   const sstat = document.getElementById('stat-status-' + page);
+  const stime = document.getElementById('stat-time-' + page);
+
   if (sdone) sdone.textContent = done;
   if (spend) spend.textContent = total - done;
   const pct = total > 0 ? Math.round(done / total * 100) : 0;
   if (sstat) sstat.textContent = pct + '%';
+  
+  let totalPageSec = 0;
+  sids.forEach(sid => { totalPageSec += calculateSectionTime(sid); });
+  if (stime) stime.textContent = formatTime(totalPageSec);
 }
 
 // ═══════════════════════════════════ SIDEBAR BADGES
@@ -2045,6 +2447,17 @@ function markAllDone() {
     s[cb.id] = true;
     const lbl = document.getElementById('tl-' + cb.id.slice(3));
     if (lbl) lbl.classList.add('done');
+
+    // Auto-pause timer on mark all
+    if (s.timers && s.timers[cb.id]) {
+      s.timers[cb.id].running = false;
+      const display = document.getElementById('timer-val-' + cb.id);
+      if (display) {
+        const btn = display.nextElementSibling;
+        btn.classList.remove('running');
+        btn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+      }
+    }
   });
   saveState(s);
   Object.keys(SECTIONS).filter(sid => SECTIONS[sid].page === page).forEach(updateSectionProgress);
