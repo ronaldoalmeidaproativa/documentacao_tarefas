@@ -21,8 +21,8 @@ Este sistema centraliza todos os processos semanais de produção de material pu
 - Cartaz Frente de Loja
 - Placas do Dia
 - Instagram (stories e feed)
-- Anúncios Jornais (Antigo G1)
-- SPOT, RDI E CARRO DE SOM (Antigo Diário do Aço)
+- G1
+- ANÚNCIOS JORNAL DIÁRIO DO AÇO
 - VT's TV Coelho Diniz
 
 **Rotina semanal:**
