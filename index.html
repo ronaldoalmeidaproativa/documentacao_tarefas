@@ -899,7 +899,7 @@
       <div class="nav-icon" style="color: #60a5fa;">
         <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><path d="M2 2h6l2 2h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="currentColor" opacity=".25"/><path d="M1 5h18v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5z" fill="currentColor" opacity=".7"/></svg>
       </div>
-      <span class="nav-label">ANÚNCIOS JORNAIS</span>
+      <span class="nav-label">G1</span>
       <span class="nav-badge none" id="badge-g1">0%</span>
     </div>
 
@@ -907,7 +907,7 @@
       <div class="nav-icon">
         <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><path d="M2 2h6l2 2h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="currentColor" opacity=".25"/><path d="M1 5h18v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5z" fill="currentColor" opacity=".7"/></svg>
       </div>
-      <span class="nav-label">SPOT, RDI E CARRO DE SOM</span>
+      <span class="nav-label">ANÚNCIOS JORNAL DIÁRIO DO AÇO</span>
       <span class="nav-badge none" id="badge-anuncios-jornal">0%</span>
     </div>
 
@@ -1370,7 +1370,7 @@
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)">
           <div class="section-type-dot dot-folder"></div>
-          <div class="section-title">ANÚNCIOS JORNAIS</div>
+          <div class="section-title">G1</div>
           <div class="section-meta">
             <span class="progress-ring" id="prog-g1-1">0/4</span>
             <span class="approval-badge badge-pending" id="apv-g1-1">PENDENTE</span>
@@ -1425,7 +1425,7 @@
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)">
           <div class="section-type-dot dot-folder"></div>
-          <div class="section-title">SPOT, RDI E CARRO DE SOM</div>
+          <div class="section-title">ANÚNCIOS JORNAL DIÁRIO DO AÇO</div>
           <div class="section-meta">
             <span class="progress-ring" id="prog-aj-1">0/3</span>
             <span class="approval-badge badge-pending" id="apv-aj-1">PENDENTE</span>
@@ -1917,8 +1917,8 @@ const PAGE_TITLES = {
   'cartaz-frente-loja':'CARTAZ FRENTE DE LOJA',
   'placas-do-dia':     'PLACAS DO DIA',
   'instagram':         'INSTAGRAM',
-  'g1':                'ANÚNCIOS JORNAIS',
-  'anuncios-jornal':   'SPOT, RDI E CARRO DE SOM',
+  'g1':                'G1',
+  'anuncios-jornal':   'ANÚNCIOS JORNAL DIÁRIO DO AÇO',
   'vt-tv':             "VT's TV COELHO DINIZ",
   'terca-feira':       'TERÇA-FEIRA — OFERTAS TV',
   'quarta-feira':      'QUARTA-FEIRA — APROVAÇÃO & PROGRAMAÇÃO',
@@ -1966,6 +1966,7 @@ function renderCharts() {
   let moduleTimes = [];
   let maxTime = 1;
   
+  let globalTotalTime = 0;
   Object.keys(PAGE_SECTIONS).forEach(page => {
     if (page === 'dashboard') return;
     let pageSec = 0;
@@ -1973,13 +1974,24 @@ function renderCharts() {
       const r = updateSectionProgress(sid);
       totalTasks += r.total;
       doneTasks += r.done;
-      pageSec += calculateSectionTime(sid);
+      const sec = calculateSectionTime(sid);
+      pageSec += sec;
+      globalTotalTime += sec;
     });
     moduleTimes.push({ name: (PAGE_TITLES[page] || page).substring(0, 10), time: pageSec });
     if (pageSec > maxTime) maxTime = pageSec;
   });
   
   const globalPct = totalTasks > 0 ? Math.round(doneTasks/totalTasks * 100) : 0;
+  
+  const statsHtml = `
+    <div class="stats-bar">
+      <div class="stat-card"><div class="stat-label">Tarefas Totais</div><div class="stat-value">${totalTasks}</div></div>
+      <div class="stat-card"><div class="stat-label">Concluídas</div><div class="stat-value green">${doneTasks}</div></div>
+      <div class="stat-card"><div class="stat-label">Progresso Global</div><div class="stat-value blue">${globalPct}%</div></div>
+      <div class="stat-card"><div class="stat-label">Tempo Total Gasto</div><div class="stat-value gold">${formatTime(globalTotalTime)}</div></div>
+    </div>`;
+
   const radius = 60;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (globalPct / 100) * circumference;
@@ -2012,7 +2024,7 @@ function renderCharts() {
       <div class="bar-chart">${barsHtml}</div>
     </div>`;
     
-  return `<div class="charts-row">${ringHtml}${barHtml}</div>`;
+  return `${statsHtml}<div class="charts-row">${ringHtml}${barHtml}</div>`;
 }
 
 function renderDashboard() {
